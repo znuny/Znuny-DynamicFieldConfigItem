@@ -25,7 +25,7 @@ sub ValueGet {
 
     $Param{DynamicFieldConfig}->{Config}->{PossibleValues} = $Self->PossibleValuesGet(%Param);
 
-    $Self->next::method(%Param);
+    return $Self->next::method(%Param);
 }
 
 sub ValueSet {
@@ -33,15 +33,7 @@ sub ValueSet {
 
     $Param{DynamicFieldConfig}->{Config}->{PossibleValues} = $Self->PossibleValuesGet(%Param);
 
-    $Self->next::method(%Param);
-}
-
-sub ValueIsDifferent {
-    my ( $Self, %Param ) = @_;
-
-    $Param{DynamicFieldConfig}->{Config}->{PossibleValues} = $Self->PossibleValuesGet(%Param);
-
-    $Self->next::method(%Param);
+    return $Self->next::method(%Param);
 }
 
 sub ValueValidate {
@@ -49,7 +41,23 @@ sub ValueValidate {
 
     $Param{DynamicFieldConfig}->{Config}->{PossibleValues} = $Self->PossibleValuesGet(%Param);
 
-    $Self->next::method(%Param);
+    return $Self->next::method(%Param);
+}
+
+sub SearchSQLGet {
+    my ( $Self, %Param ) = @_;
+
+    $Param{DynamicFieldConfig}->{Config}->{PossibleValues} = $Self->PossibleValuesGet(%Param);
+
+    return $Self->next::method(%Param);
+}
+
+sub SearchSQLOrderFieldGet {
+    my ( $Self, %Param ) = @_;
+
+    $Param{DynamicFieldConfig}->{Config}->{PossibleValues} = $Self->PossibleValuesGet(%Param);
+
+    return $Self->next::method(%Param);
 }
 
 sub EditFieldRender {
@@ -57,7 +65,7 @@ sub EditFieldRender {
 
     $Param{DynamicFieldConfig}->{Config}->{PossibleValues} = $Self->PossibleValuesGet(%Param);
 
-    $Self->next::method(%Param);
+    return $Self->next::method(%Param);
 }
 
 sub EditFieldValueGet {
@@ -65,7 +73,7 @@ sub EditFieldValueGet {
 
     $Param{DynamicFieldConfig}->{Config}->{PossibleValues} = $Self->PossibleValuesGet(%Param);
 
-    $Self->next::method(%Param);
+    return $Self->next::method(%Param);
 }
 
 sub EditFieldValueValidate {
@@ -73,7 +81,7 @@ sub EditFieldValueValidate {
 
     $Param{DynamicFieldConfig}->{Config}->{PossibleValues} = $Self->PossibleValuesGet(%Param);
 
-    $Self->next::method(%Param);
+    return $Self->next::method(%Param);
 }
 
 sub DisplayValueRender {
@@ -81,7 +89,23 @@ sub DisplayValueRender {
 
     $Param{DynamicFieldConfig}->{Config}->{PossibleValues} = $Self->PossibleValuesGet(%Param);
 
-    $Self->next::method(%Param);
+    return $Self->next::method(%Param);
+}
+
+sub SearchFieldRender {
+    my ( $Self, %Param ) = @_;
+
+    $Param{DynamicFieldConfig}->{Config}->{PossibleValues} = $Self->PossibleValuesGet(%Param);
+
+    return $Self->next::method(%Param);
+}
+
+sub SearchFieldValueGet {
+    my ( $Self, %Param ) = @_;
+
+    $Param{DynamicFieldConfig}->{Config}->{PossibleValues} = $Self->PossibleValuesGet(%Param);
+
+    return $Self->next::method(%Param);
 }
 
 sub SearchFieldParameterBuild {
@@ -89,7 +113,7 @@ sub SearchFieldParameterBuild {
 
     $Param{DynamicFieldConfig}->{Config}->{PossibleValues} = $Self->PossibleValuesGet(%Param);
 
-    $Self->next::method(%Param);
+    return $Self->next::method(%Param);
 }
 
 sub StatsFieldParameterBuild {
@@ -97,7 +121,15 @@ sub StatsFieldParameterBuild {
 
     $Param{DynamicFieldConfig}->{Config}->{PossibleValues} = $Self->PossibleValuesGet(%Param);
 
-    $Self->next::method(%Param);
+    return $Self->next::method(%Param);
+}
+
+sub StatsSearchFieldParameterBuild {
+    my ( $Self, %Param ) = @_;
+
+    $Param{DynamicFieldConfig}->{Config}->{PossibleValues} = $Self->PossibleValuesGet(%Param);
+
+    return $Self->next::method(%Param);
 }
 
 sub ReadableValueRender {
@@ -105,7 +137,7 @@ sub ReadableValueRender {
 
     $Param{DynamicFieldConfig}->{Config}->{PossibleValues} = $Self->PossibleValuesGet(%Param);
 
-    $Self->next::method(%Param);
+    return $Self->next::method(%Param);
 }
 
 sub TemplateValueTypeGet {
@@ -113,7 +145,15 @@ sub TemplateValueTypeGet {
 
     $Param{DynamicFieldConfig}->{Config}->{PossibleValues} = $Self->PossibleValuesGet(%Param);
 
-    $Self->next::method(%Param);
+    return $Self->next::method(%Param);
+}
+
+sub RandomValueSet {
+    my ( $Self, %Param ) = @_;
+
+    $Param{DynamicFieldConfig}->{Config}->{PossibleValues} = $Self->PossibleValuesGet(%Param);
+
+    return $Self->next::method(%Param);
 }
 
 sub ObjectMatch {
@@ -121,7 +161,7 @@ sub ObjectMatch {
 
     $Param{DynamicFieldConfig}->{Config}->{PossibleValues} = $Self->PossibleValuesGet(%Param);
 
-    $Self->next::method(%Param);
+    return $Self->next::method(%Param);
 }
 
 sub HistoricalValuesGet {
@@ -129,7 +169,7 @@ sub HistoricalValuesGet {
 
     $Param{DynamicFieldConfig}->{Config}->{PossibleValues} = $Self->PossibleValuesGet(%Param);
 
-    $Self->next::method(%Param);
+    return $Self->next::method(%Param);
 }
 
 sub ValueLookup {
@@ -137,7 +177,7 @@ sub ValueLookup {
 
     $Param{DynamicFieldConfig}->{Config}->{PossibleValues} = $Self->PossibleValuesGet(%Param);
 
-    $Self->next::method(%Param);
+    return $Self->next::method(%Param);
 }
 
 sub BuildSelectionDataGet {
@@ -145,7 +185,15 @@ sub BuildSelectionDataGet {
 
     $Param{DynamicFieldConfig}->{Config}->{PossibleValues} = $Self->PossibleValuesGet(%Param);
 
-    $Self->next::method(%Param);
+    return $Self->next::method(%Param);
+}
+
+sub ColumnFilterValuesGet {
+    my ( $Self, %Param ) = @_;
+
+    $Param{DynamicFieldConfig}->{Config}->{PossibleValues} = $Self->PossibleValuesGet(%Param);
+
+    return $Self->next::method(%Param);
 }
 
 sub PossibleValuesGet {
