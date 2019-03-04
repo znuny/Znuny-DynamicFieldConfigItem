@@ -4,7 +4,7 @@
     <Version>5.0.1</Version>
     <ChangeLog Version="5.0.1" Date="2017-08-10 16:08:26 +0200">Initial release 5.0.x.</ChangeLog>
     <Framework>5.0.x</Framework>
-    <PackageRequired Version="5.0.13">Znuny4OTRS-Repo</PackageRequired>
+    <PackageRequired Version="5.0.46">Znuny4OTRS-Repo</PackageRequired>
     <Vendor>Znuny GmbH</Vendor>
     <URL>http://znuny.com/</URL>
     <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>

@@ -1,4 +1,4 @@
-# Znuny4OTRS-DynamicFieldConfigItem
+# Funktionalität
 
 Im OTRS Standard ist es nicht möglich ConfigItems einer bestimmten Klasse als dynamisches Feld zu hinterlegen.
 
