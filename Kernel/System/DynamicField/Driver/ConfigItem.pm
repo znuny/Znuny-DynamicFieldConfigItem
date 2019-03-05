@@ -202,7 +202,6 @@ sub PossibleValuesGet {
     my $ConfigItemObject     = $Kernel::OM->Get('Kernel::System::ITSMConfigItem');
     my $GeneralCatalogObject = $Kernel::OM->Get('Kernel::System::GeneralCatalog');
 
-    # get config class
     my $Class = $Param{DynamicFieldConfig}->{Config}->{ConfigItemClass};
     return if !$Class;
 
@@ -211,8 +210,6 @@ sub PossibleValuesGet {
         Class => 'ITSM::ConfigItem::Class',
     );
     my %Classes = reverse %{ $HashRef || {} };
-
-    # check if class exists
     return if !$Classes{$Class};
 
     # get all config items of that class
@@ -222,20 +219,16 @@ sub PossibleValuesGet {
         Limit   => 1_000_000,
     );
 
-    # create possible values hash
     my %PossibleValues;
     CONFIGITEM:
     for my $ConfigItem ( @{ $ConfigItemListRef || {} } ) {
         $PossibleValues{ $ConfigItem->{ConfigItemID} } = $ConfigItem->{Name};
     }
 
-    # return the possible values hash as a reference
     return \%PossibleValues;
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 

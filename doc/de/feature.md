@@ -1,11 +1,5 @@
 # Funktionalität
 
-Im OTRS Standard ist es nicht möglich ConfigItems einer bestimmten Klasse als dynamisches Feld zu hinterlegen.
+Mit diesem Paket können dynamische Felder angelegt werden, dir per Einzel- oder Mehrfachauswahl die Werte eine Config-Item-Klasse bereitstellen.
 
-Mit diesem Paket kann man Konfiguration für dynamische Felder anlegen, um dynamischen Felder vom Typ Mehrfachauswahl mit den Werten einer CI-Klassen zu erstellen.
-
-Es handelt sich hierbei um ein einfaches Dropdown oder eine Mehrfachauswahl. Bitte beachten Sie, dass diese Felder nur für kleine ConfigItem-Listen (<2000 Elemente pro Klasse) ausgelegt sind.
-
-Sobald ein dynamisches Feld dieses Typs angelegt wird, kann der Admin auswählen, welche CMDB-Klasse für dieses Feld hinterlegt werden soll.
-
-Das dynamische Feld zeigt dann in den Eingabemasken den Namen der ConfigItems der Klasse an.
+Bitte beachten Sie, dass diese Felder nur für kleine ConfigItem-Listen (weniger als 2000 Elemente pro Klasse) ausgelegt sind. Sobald ein dynamisches Feld dieses Typs angelegt wird, kann der Admin auswählen, welche CMDB-Klasse für dieses Feld verwendet werden soll. Das dynamische Feld zeigt dann in den Eingabemasken den Namen der Config-Items der Klasse an.

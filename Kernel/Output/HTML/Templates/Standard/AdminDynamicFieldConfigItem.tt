@@ -7,7 +7,31 @@
 # --
 
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
-    <h1>[% Translate("Dynamic Fields") | html %] - [% Translate(Data.ObjectTypeName) | html %]: [% Translate(Data.Mode) | html %] [% Translate(Data.FieldTypeName) | html %] [% Translate("Field") | html %]</h1>
+
+    <h1 class="InvisibleText">
+        [% Translate("Dynamic Fields") | html %] - [% Translate(Data.ObjectTypeName) | html %]:
+        [% USE Title = String(Data.BreadcrumbText) %]
+        [% Title | html %]
+    </h1>
+
+    [% BreadcrumbPath = [
+            {
+                Name => Translate('Dynamic Fields Management'),
+                Link => 'AdminDynamicField',
+            },
+        ]
+    %]
+
+    [% USE BreadcrumbName = String(Translate(Data.ObjectTypeName)) %]
+
+    [% SWITCH Data.Mode %]
+        [% CASE 'Add' %]
+            [% BreadcrumbPath.push({ Name => BreadcrumbName.append( ': ', Title ) }) %]
+        [% CASE 'Change' %]
+            [% BreadcrumbPath.push({ Name => BreadcrumbName.append( ': ', Title, ' - ', Data.Name ) }) %]
+    [% END %]
+
+    [% INCLUDE "Breadcrumb.tt" Path = BreadcrumbPath %]
 
     <div class="Clear"></div>
 
@@ -46,9 +70,9 @@
                                 <label class="Mandatory" for="Name"><span class="Marker">*</span> [% Translate("Name") | html %]:</label>
                                 <div class="Field">
                                     <input id="Name" class="W50pc [% Data.NameServerError | html %] [% Data.ShowWarning | html %]  Validate_Alphanumeric" type="text" maxlength="200" value="[% Data.Name | html %]" name="Name" [% Data.ReadonlyInternalField | html %]>
-                                    <div id="NameError" class="TooltipErrorMessage"><p>[% Translate("This field is required, and the value should be alphabetic and numeric characters only.") | html %]</p></div>
+                                    <div id="NameError" class="TooltipErrorMessage"><p>[% Translate("This field is required and the value must be alphanumeric.") | html %]</p></div>
                                     <div id="NameServerError" class="TooltipErrorMessage"><p>[% Translate(Data.NameServerErrorMessage) | html %]</p></div>
-                                    <p class="FieldExplanation">[% Translate("Must be unique and only accept alphabetic and numeric characters.") | html %]</p>
+                                    <p class="FieldExplanation">[% Translate("Must be unique and only accepts alphanumeric characters.") | html %]</p>
                                     <p class="Warning Hidden">[% Translate("Changing this value will require manual changes in the system.") | html %]</p>
                                 </div>
                                 <div class="Clear"></div>
@@ -67,7 +91,7 @@
                                     [% Data.DynamicFieldOrderStrg %]
                                     <div id="FieldOrderError" class="TooltipErrorMessage"><p>[% Translate("This field is required and must be numeric.") | html %]</p></div>
                                     <div id="FieldOrderServerError" class="TooltipErrorMessage"><p>[% Translate(Data.FieldOrderServerErrorMessage) | html %]</p></div>
-                                    <p class="FieldExplanation">[% Translate("This is the order in which this field will be shown on the screens where is active.") | html %]</p>
+                                    <p class="FieldExplanation">[% Translate("This is the order in which this field will be shown on the screens where it is active.") | html %]</p>
                                 </div>
                                 <div class="Clear"></div>
                             </fieldset>
@@ -116,7 +140,7 @@
                 </div>
                 <div class="Content">
                     <fieldset class="TableLike">
-                        <label class="Mandatory" for="ConfigItemClass"><span class="Marker">*</span> [% Translate("ConfigItem Class") | html %]:</label>
+                        <label class="Mandatory" for="ConfigItemClass"><span class="Marker">*</span> [% Translate("Config item class") | html %]:</label>
                         <div class="Field">
                             [% Data.ConfigItemClassStrg %]
                             <div id="ConfigItemClassError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>

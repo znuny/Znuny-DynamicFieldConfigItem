@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<otrs_config version="2.0" init="Application">
+    <Setting Name="Znuny4OTRSDynamicFieldConfigItem###TicketLink" Required="1" Valid="1">
+        <Description Translatable="1">Creates a link between ticket and config item after setting the value in the dynamic field.</Description>
+        <Navigation>Core::Znuny4OTRS::DynamicFieldConfigItem</Navigation>
+        <Value>
+            <Item ValueType="Select" SelectedID="1">
+                <Item ValueType="Option" Value="0" Translatable="1">No</Item>
+                <Item ValueType="Option" Value="1" Translatable="1">Yes</Item>
+            </Item>
+        </Value>
+    </Setting>
+    <Setting Name="Znuny4OTRSDynamicFieldConfigItem###LinkType" Required="1" Valid="1">
+        <Description Translatable="1">Link type between ticket and config item.</Description>
+        <Navigation>Core::Znuny4OTRS::DynamicFieldConfigItem</Navigation>
+        <Value>
+            <Item ValueType="Select" SelectedID="RelevantTo">
+                <Item ValueType="Option" Value="AlternativeTo" Translatable="1">AlternativeTo</Item>
+                <Item ValueType="Option" Value="DependsOn" Translatable="1">DependsOn</Item>
+                <Item ValueType="Option" Value="RelevantTo" Translatable="1">RelevantTo</Item>
+            </Item>
+        </Value>
+    </Setting>
+    <!-- nofilter(TidyAll::Plugin::OTRS::Znuny4OTRS::ACLKeysLevel3Actions) -->
+    <Setting Name="Frontend::Module###AdminDynamicFieldConfigItem" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration</Navigation>
+        <Value>
+            <Item ValueType="FrontendRegistration">
+                <Hash>
+                    <Item Key="GroupRo">
+                        <Array>
+                        </Array>
+                    </Item>
+                    <Item Key="Group">
+                        <Array>
+                            <Item>admin</Item>
+                        </Array>
+                    </Item>
+                    <Item Key="Description">Admin</Item>
+                    <Item Key="Title" Translatable="1">Dynamic fields administration</Item>
+                    <Item Key="NavBarName">Admin</Item>
+                </Hash>
+            </Item>
+        </Value>
+    </Setting>
+    <Setting Name="DynamicFields::Driver###ConfigItemMultiselect" Required="0" Valid="1">
+        <Description Translatable="1">Dynamic field backend registration.</Description>
+        <Navigation>Core::DynamicFields::DriverRegistration</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="DisplayName" Translatable="1">Config item (multiselect)</Item>
+                <Item Key="Module">Kernel::System::DynamicField::Driver::ConfigItemMultiselect</Item>
+                <Item Key="ConfigDialog">AdminDynamicFieldConfigItem</Item>
+                <Item Key="Config">
+                    <Hash>
+                    </Hash>
+                </Item>
+            </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="DynamicFields::Driver###ConfigItemDropdown" Required="0" Valid="1">
+        <Description Translatable="1">Dynamic field backend registration.</Description>
+        <Navigation>Core::DynamicFields::DriverRegistration</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="DisplayName" Translatable="1">Config item (dropdown)</Item>
+                <Item Key="Module">Kernel::System::DynamicField::Driver::ConfigItemDropdown</Item>
+                <Item Key="ConfigDialog">AdminDynamicFieldConfigItem</Item>
+                <Item Key="Config">
+                    <Hash>
+                    </Hash>
+                </Item>
+            </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="Ticket::EventModulePost###999-Znuny4OTRSDynamicFieldConfigItem" Required="0" Valid="1">
+        <Description Translatable="1">Ticket event module that creates and removes links between tickets and config items.</Description>
+        <Navigation>Core::Event::Znuny4OTRS::DynamicFieldConfigItem</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="Module">Kernel::System::Ticket::Event::Znuny4OTRSDynamicFieldConfigItem</Item>
+                <Item Key="Transaction">0</Item>
+                <Item Key="Event">TicketDynamicFieldUpdate</Item>
+            </Hash>
+        </Value>
+    </Setting>
+</otrs_config>

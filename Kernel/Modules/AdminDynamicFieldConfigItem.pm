@@ -15,6 +15,7 @@ our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::Output::HTML::Layout',
     'Kernel::System::DynamicField',
+    'Kernel::System::GeneralCatalog',
     'Kernel::System::Valid',
     'Kernel::System::Web::Request',
 );
@@ -30,8 +31,6 @@ sub new {
 
     my $Self = {%Param};
     bless( $Self, $Type );
-
-    # create additional objects
 
     # get configured object types
     $Self->{ObjectTypeConfig} = $ConfigObject->Get('DynamicFields::ObjectType');
@@ -53,8 +52,6 @@ sub Run {
         );
     }
     elsif ( $Self->{Subaction} eq 'AddAction' ) {
-
-        # challenge token check for write action
         $LayoutObject->ChallengeTokenCheck();
 
         return $Self->_AddAction(
@@ -67,14 +64,13 @@ sub Run {
         );
     }
     elsif ( $Self->{Subaction} eq 'ChangeAction' ) {
-
-        # challenge token check for write action
         $LayoutObject->ChallengeTokenCheck();
 
         return $Self->_ChangeAction(
             %Param,
         );
     }
+
     return $LayoutObject->ErrorScreen(
         Message => "Undefined subaction.",
     );
@@ -94,7 +90,7 @@ sub _Add {
         next NEEDED if $Needed;
 
         return $LayoutObject->ErrorScreen(
-            Message => "Need $Needed",
+            Message => "Need $Needed.",
         );
     }
 
@@ -106,6 +102,8 @@ sub _Add {
         %Param,
         %GetParam,
         Mode           => 'Add',
+        BreadcrumbText => $LayoutObject->{LanguageObject}
+            ->Translate( 'Add %s field', $LayoutObject->{LanguageObject}->Translate($FieldTypeName) ),
         ObjectTypeName => $ObjectTypeName,
         FieldTypeName  => $FieldTypeName,
     );
@@ -172,15 +170,14 @@ sub _AddAction {
         }
     }
 
-    for my $ConfigParam (qw(ObjectType ObjectTypeName FieldType FieldTypeName ValidID ConfigItemClass))
-    {
+    for my $ConfigParam (qw(ObjectType ObjectTypeName FieldType FieldTypeName ValidID ConfigItemClass)) {
         $GetParam{$ConfigParam} = $ParamObject->GetParam( Param => $ConfigParam );
     }
 
     # uncorrectable errors
     if ( !$GetParam{ValidID} ) {
         return $LayoutObject->ErrorScreen(
-            Message => "Need ValidID",
+            Message => 'Need ValidID.',
         );
     }
 
@@ -230,7 +227,7 @@ sub _AddAction {
 
     if ( !$FieldID ) {
         return $LayoutObject->ErrorScreen(
-            Message => "Could not create the new field",
+            Message => 'Could not create the new field.',
         );
     }
 
@@ -251,7 +248,7 @@ sub _Change {
         $GetParam{$Needed} = $ParamObject->GetParam( Param => $Needed );
         if ( !$Needed ) {
             return $LayoutObject->ErrorScreen(
-                Message => "Need $Needed",
+                Message => "Need $Needed.",
             );
         }
     }
@@ -261,26 +258,22 @@ sub _Change {
     my $FieldTypeName  = $Self->{FieldTypeConfig}->{ $GetParam{FieldType} }->{DisplayName}   || '';
 
     my $FieldID = $ParamObject->GetParam( Param => 'ID' );
-
     if ( !$FieldID ) {
         return $LayoutObject->ErrorScreen(
-            Message => "Need ID",
+            Message => 'Need ID.',
         );
     }
 
-    # get dynamic field data
     my $DynamicFieldData = $DynamicFieldObject->DynamicFieldGet(
         ID => $FieldID,
     );
-
-    # check for valid dynamic field configuration
     if ( !IsHashRefWithData($DynamicFieldData) ) {
         return $LayoutObject->ErrorScreen(
-            Message => "Could not get data for dynamic field $FieldID",
+            Message => "Could not get data for dynamic field $FieldID.",
         );
     }
 
-    my %Config = ();
+    my %Config;
 
     # extract configuration
     if ( IsHashRefWithData( $DynamicFieldData->{Config} ) ) {
@@ -299,6 +292,8 @@ sub _Change {
         %Config,
         ID             => $FieldID,
         Mode           => 'Change',
+        BreadcrumbText => $LayoutObject->{LanguageObject}
+            ->Translate( 'Change %s field', $LayoutObject->{LanguageObject}->Translate($FieldTypeName) ),
         ObjectTypeName => $ObjectTypeName,
         FieldTypeName  => $FieldTypeName,
     );
@@ -327,19 +322,15 @@ sub _ChangeAction {
     my $FieldID = $ParamObject->GetParam( Param => 'ID' );
     if ( !$FieldID ) {
         return $LayoutObject->ErrorScreen(
-            Message => "Need ID",
+            Message => 'Need ID.',
         );
     }
-
-    # get dynamic field data
     my $DynamicFieldData = $DynamicFieldObject->DynamicFieldGet(
         ID => $FieldID,
     );
-
-    # check for valid dynamic field configuration
     if ( !IsHashRefWithData($DynamicFieldData) ) {
         return $LayoutObject->ErrorScreen(
-            Message => "Could not get data for dynamic field $FieldID",
+            Message => "Could not get data for dynamic field $FieldID.",
         );
     }
 
@@ -347,8 +338,6 @@ sub _ChangeAction {
 
         # check if name is lowercase
         if ( $GetParam{Name} !~ m{\A (?: [a-zA-Z] | \d )+ \z}xms ) {
-
-            # add server error error class
             $Errors{NameServerError} = 'ServerError';
             $Errors{NameServerErrorMessage} =
                 'The field does not contain only ASCII letters and numbers.';
@@ -361,21 +350,17 @@ sub _ChangeAction {
                 ResultType => 'HASH',
                 )
         };
-
         %DynamicFieldsList = reverse %DynamicFieldsList;
-
         if (
             $DynamicFieldsList{ $GetParam{Name} } &&
             $DynamicFieldsList{ $GetParam{Name} } ne $FieldID
             )
         {
-
-            # add server error class
             $Errors{NameServerError}        = 'ServerError';
             $Errors{NameServerErrorMessage} = 'There is another field with the same name.';
         }
 
-        # if it's an internal field, it's name should not change
+        # if it's an internal field, its name should not change
         if (
             $DynamicFieldData->{InternalField} &&
             $DynamicFieldsList{ $GetParam{Name} } ne $FieldID
@@ -400,15 +385,13 @@ sub _ChangeAction {
         }
     }
 
-    for my $ConfigParam (qw(ObjectType ObjectTypeName FieldType FieldTypeName DefaultValue ValidID))
-    {
+    for my $ConfigParam (qw(ObjectType ObjectTypeName FieldType FieldTypeName DefaultValue ValidID)) {
         $GetParam{$ConfigParam} = $ParamObject->GetParam( Param => $ConfigParam );
     }
 
-    # uncorrectable errors
     if ( !$GetParam{ValidID} ) {
         return $LayoutObject->ErrorScreen(
-            Message => "Need ValidID",
+            Message => 'Need ValidID.',
         );
     }
 
@@ -438,7 +421,7 @@ sub _ChangeAction {
 
     if ( !$UpdateSuccess ) {
         return $LayoutObject->ErrorScreen(
-            Message => "Could not update the field $GetParam{Name}",
+            Message => "Could not update the field $GetParam{Name}.",
         );
     }
 
@@ -462,11 +445,9 @@ sub _ShowScreen {
         $Param{DisplayFieldName} = $Param{Name};
     }
 
-    # header
     my $Output = $LayoutObject->Header();
     $Output .= $LayoutObject->NavigationBar();
 
-    # get all fields
     my $DynamicFieldList = $DynamicFieldObject->DynamicFieldListGet(
         Valid => 0,
     );
@@ -492,7 +473,7 @@ sub _ShowScreen {
 
     # show the names of the other fields to ease ordering
     my %OrderNamesList;
-    my $CurrentlyText = $LayoutObject->{LanguageObject}->Get('Currently') . ': ';
+    my $CurrentlyText = $LayoutObject->{LanguageObject}->Translate('Currently') . ': ';
     for my $OrderNumber ( sort @DynamicfieldOrderList ) {
         $OrderNamesList{$OrderNumber} = $OrderNumber;
         if ( $DynamicfieldNamesList{$OrderNumber} && $OrderNumber ne $Param{FieldOrder} ) {
@@ -512,9 +493,7 @@ sub _ShowScreen {
         Class         => 'W75pc Validate_Number',
     );
 
-    my %ValidList = $ValidObject->ValidList();
-
-    # create the Validity select
+    my %ValidList    = $ValidObject->ValidList();
     my $ValidityStrg = $LayoutObject->BuildSelection(
         Data         => \%ValidList,
         Name         => 'ValidID',
@@ -540,13 +519,11 @@ sub _ShowScreen {
         Class => 'ITSM::ConfigItem::Class',
     );
 
-    # prepare class list
     my $ClassList = [ sort values %{ $ItemListRef || {} } ];
 
     # disable field in change dialogs
     my $Disabled = $Param{Mode} eq 'Change' ? 1 : 0;
 
-    # build selection for config item class
     $Param{ConfigItemClassStrg} = $LayoutObject->BuildSelection(
         Data         => $ClassList,
         SelectedID   => $Param{ConfigItemClass},
@@ -558,7 +535,6 @@ sub _ShowScreen {
         Sort         => 'AlphanumericKey',
     );
 
-    # generate output
     $Output .= $LayoutObject->Output(
         TemplateFile => 'AdminDynamicFieldConfigItem',
         Data         => {

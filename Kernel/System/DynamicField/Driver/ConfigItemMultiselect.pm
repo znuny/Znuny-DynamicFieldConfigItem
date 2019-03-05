@@ -13,7 +13,7 @@ use warnings;
 
 use Kernel::System::VariableCheck qw(:all);
 
-use base qw(
+use parent qw(
     Kernel::System::DynamicField::Driver::ConfigItem
     Kernel::System::DynamicField::Driver::Multiselect
 );
