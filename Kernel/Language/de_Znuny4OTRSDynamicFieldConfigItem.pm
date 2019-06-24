@@ -17,11 +17,12 @@ sub Data {
     my $Self = shift;
 
     # Frontend
-    $Self->{Translation}->{'Config item (multiselect)'} = 'Config-Item (Mehrfachauswahl)';
-    $Self->{Translation}->{'Config item (dropdown)'}    = 'Config-Item (Einfachauswahl)';
-    $Self->{Translation}->{'Config item class'}         = 'Config-Item-Klasse';
-    $Self->{Translation}->{'Add %s field'}              = 'Feld %s hinzufügen';
-    $Self->{Translation}->{'Change %s field'}           = 'Feld %s ändern';
+    $Self->{Translation}->{'Config item (multiselect)'}     = 'Config-Item (Mehrfachauswahl)';
+    $Self->{Translation}->{'Config item (dropdown)'}        = 'Config-Item (Einfachauswahl)';
+    $Self->{Translation}->{'Config item class'}             = 'Config-Item-Klasse';
+    $Self->{Translation}->{'Config item deployment states'} = 'Config-Item-Verwendungsstatus';
+    $Self->{Translation}->{'Add %s field'}                  = 'Feld %s hinzufügen';
+    $Self->{Translation}->{'Change %s field'}               = 'Feld %s ändern';
 
     $Self->{Translation}->{"Changing this value will require manual changes in the system."} = "Die Änderung dieses Wertes erfordert manuelle Änderungen im System.";
 

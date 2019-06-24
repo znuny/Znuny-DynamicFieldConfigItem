@@ -58,6 +58,9 @@
             <input type="hidden" name="ObjectType" value="[% Data.ObjectType | html %]">
             <input type="hidden" name="FieldType" value="[% Data.FieldType | html %]">
             <input type="hidden" name="ID" value="[% Data.ID | html %]">
+            [% IF Data.Mode == 'Change' %]
+                <input type="hidden" name="ContinueAfterSave" id="ContinueAfterSave" value=""/>
+            [% END %]
 
             <div class="WidgetSimple">
                 <div class="Header">
@@ -136,7 +139,7 @@
             </div>
             <div class="WidgetSimple">
                 <div class="Header">
-                    <h2>[% Translate(Data.FieldTypeName) | html %] [% Translate("Field Settings") | html %]</h2>
+                    <h2>[% Translate("Field Settings") | html %]: [% Translate(Data.FieldTypeName) | html %]</h2>
                 </div>
                 <div class="Content">
                     <fieldset class="TableLike">
@@ -146,15 +149,28 @@
                             <div id="ConfigItemClassError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
                             <div id="ConfigItemClassServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
                         </div>
+
+                        <div class="Clear"></div>
+
+                        <label for="DeplStateIDs">[% Translate("Config item deployment states") | html %]:</label>
+                        <div class="Field">
+                            [% Data.DeplStateSelectionHTML %]
+                        </div>
                     </fieldset>
                 </div>
             </div>
 
             <fieldset class="TableLike">
                 <div class="Field SpacingTop">
-                    <button type="submit" class="Primary" value="[% Translate(Data.Mode) | html %]">[% Translate(Data.Mode) | html %]</button>
+                    [% IF Data.Mode == 'Change' %]
+                        <button class="CallForAction Primary" id="SubmitAndContinue" type="button" value="[% Translate("Save") | html %]"><span>[% Translate("Save") | html %]</span></button>
+                        [% Translate("or") | html %]
+                        <button class="CallForAction Primary" id="Submit" type="submit" value="[% Translate("Save") | html %]"><span>[% Translate("Save and finish") | html %]</span></button>
+                    [% ELSE %]
+                        <button class="CallForAction Primary" id="Submit" type="submit" value="[% Translate("Save") | html %]"><span>[% Translate("Save") | html %]</span></button>
+                    [% END %]
                     [% Translate("or") | html %]
-                    <a href="[% Env("Baselink") %]Action=AdminDynamicField">[% Translate("Cancel") | html %]</a>
+                    <a href="[% Env("Baselink") %]Action=AdminDynamicField"><span>[% Translate("Cancel") | html %]</span></a>
                 </div>
                 <div class="Clear"></div>
             </fieldset>

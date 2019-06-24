@@ -174,6 +174,14 @@ sub _AddAction {
         $GetParam{$ConfigParam} = $ParamObject->GetParam( Param => $ConfigParam );
     }
 
+    my @DeplStateIDs = $ParamObject->GetArray(
+        Param => 'DeplStateIDs',
+        Raw   => 1,
+    );
+    if (@DeplStateIDs) {
+        $GetParam{DeplStateIDs} = \@DeplStateIDs;
+    }
+
     # uncorrectable errors
     if ( !$GetParam{ValidID} ) {
         return $LayoutObject->ErrorScreen(
@@ -211,6 +219,10 @@ sub _AddAction {
     # overwrite config item class
     if ( $GetParam{ConfigItemClass} ) {
         $DynamicFieldConfig->{ConfigItemClass} = $GetParam{ConfigItemClass};
+    }
+
+    if ( $GetParam{DeplStateIDs} ) {
+        $DynamicFieldConfig->{DeplStateIDs} = $GetParam{DeplStateIDs};
     }
 
     # create a new field
@@ -389,6 +401,16 @@ sub _ChangeAction {
         $GetParam{$ConfigParam} = $ParamObject->GetParam( Param => $ConfigParam );
     }
 
+    # Config item class is read-only in change, so set it to the stored value everytime.
+    $GetParam{ConfigItemClass} = $DynamicFieldData->{Config}->{ConfigItemClass};
+
+    my @DeplStateIDs = $ParamObject->GetArray(
+        Param => 'DeplStateIDs',
+        Raw   => 1,
+    );
+    $GetParam{DeplStateIDs} = \@DeplStateIDs;
+    $DynamicFieldData->{Config}->{DeplStateIDs} = \@DeplStateIDs;
+
     if ( !$GetParam{ValidID} ) {
         return $LayoutObject->ErrorScreen(
             Message => 'Need ValidID.',
@@ -422,6 +444,13 @@ sub _ChangeAction {
     if ( !$UpdateSuccess ) {
         return $LayoutObject->ErrorScreen(
             Message => "Could not update the field $GetParam{Name}.",
+        );
+    }
+
+    if ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) ) {
+        return $LayoutObject->Redirect(
+            OP =>
+                "Action=$Self->{Action};Subaction=Change;ObjectType=$GetParam{ObjectType};FieldType=$GetParam{FieldType};ID=$FieldID"
         );
     }
 
@@ -535,13 +564,28 @@ sub _ShowScreen {
         Sort         => 'AlphanumericKey',
     );
 
+    # selection of deployment states
+    my $DeplStates = $GeneralCatalogObject->ItemList(
+        Class => 'ITSM::ConfigItem::DeploymentState',
+    );
+
+    my $DeplStateSelectionHTML = $LayoutObject->BuildSelection(
+        Data         => $DeplStates,
+        Name         => 'DeplStateIDs',
+        PossibleNone => 0,
+        Class        => 'Modernize',
+        Multiple     => 1,
+        SelectedID   => $Param{DeplStateIDs},
+    );
+
     $Output .= $LayoutObject->Output(
         TemplateFile => 'AdminDynamicFieldConfigItem',
         Data         => {
             %Param,
-            ValidityStrg          => $ValidityStrg,
-            DynamicFieldOrderStrg => $DynamicFieldOrderStrg,
-            ReadonlyInternalField => $ReadonlyInternalField,
+            DeplStateSelectionHTML => $DeplStateSelectionHTML,
+            ValidityStrg           => $ValidityStrg,
+            DynamicFieldOrderStrg  => $DynamicFieldOrderStrg,
+            ReadonlyInternalField  => $ReadonlyInternalField,
             }
     );
 

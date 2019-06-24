@@ -205,19 +205,41 @@ sub PossibleValuesGet {
     my $Class = $Param{DynamicFieldConfig}->{Config}->{ConfigItemClass};
     return if !$Class;
 
-    # check all ci classes
+    # check all CI classes
     my $HashRef = $GeneralCatalogObject->ItemList(
         Class => 'ITSM::ConfigItem::Class',
     );
     my %Classes = reverse %{ $HashRef || {} };
     return if !$Classes{$Class};
 
-    # get all config items of that class
-    my $ConfigItemListRef = $ConfigItemObject->ConfigItemResultList(
-        ClassID => $Classes{$Class},
-        Start   => 0,
-        Limit   => 1_000_000,
-    );
+    my $ConfigItemListRef = [];
+
+    # limit selectable config items to those which have one of the configured
+    # deployment states
+    my $DeplStateIDs = $Param{DynamicFieldConfig}->{Config}->{DeplStateIDs} // [];
+    if ( IsArrayRefWithData($DeplStateIDs) ) {
+        my $ConfigItemIDs = $ConfigItemObject->ConfigItemSearch(
+            ClassIDs     => [ $Classes{$Class}, ],
+            DeplStateIDs => $DeplStateIDs,
+        );
+
+        for my $ConfigItemID ( @{$ConfigItemIDs} ) {
+            my $LastVersion = $ConfigItemObject->VersionGet(
+                ConfigItemID => $ConfigItemID,
+                XMLDataGet   => 0,
+            );
+
+            push @{$ConfigItemListRef}, $LastVersion;
+        }
+    }
+    else {
+        # get all config items of that class
+        $ConfigItemListRef = $ConfigItemObject->ConfigItemResultList(
+            ClassID => $Classes{$Class},
+            Start   => 0,
+            Limit   => 1_000_000,
+        );
+    }
 
     my %PossibleValues;
     CONFIGITEM:
@@ -225,17 +247,10 @@ sub PossibleValuesGet {
         $PossibleValues{ $ConfigItem->{ConfigItemID} } = $ConfigItem->{Name};
     }
 
+    # add empty value, none of the config item fields can be a mandatory field
+    $PossibleValues{''} = '-';
+
     return \%PossibleValues;
 }
 
 1;
-
-=head1 TERMS AND CONDITIONS
-
-This software is part of the OTRS project (L<http://otrs.org/>).
-
-This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut
