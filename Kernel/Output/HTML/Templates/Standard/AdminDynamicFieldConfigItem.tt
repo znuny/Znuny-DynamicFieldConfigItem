@@ -149,13 +149,37 @@
                             <div id="ConfigItemClassError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
                             <div id="ConfigItemClassServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
                         </div>
-
                         <div class="Clear"></div>
 
+                        <div class="SpacingTop"></div>
                         <label for="DeplStateIDs">[% Translate("Config item deployment states") | html %]:</label>
                         <div class="Field">
                             [% Data.DeplStateSelectionHTML %]
                         </div>
+                        <div class="Clear"></div>
+
+                        <div class="SpacingTop"></div>
+                        <label for="ConfigItemLinkType">[% Translate("Config item link type") | html %]:</label>
+                        <div class="Field">
+                            [% Data.ConfigItemLinkTypeSelectionHTML %]
+                            <p class="FieldExplanation">[% Translate("Select a link type to enable linking between the ticket and the selected config items. Note that linking is only availabe for dynamic fields of tickets.") | html %]</p>
+                        </div>
+                        <div class="Clear"></div>
+
+                        <div class="SpacingTop"></div>
+                        <label for="ConfigItemLinkSource">[% Translate("Config item link source") | html %]:</label>
+                        <div class="Field">
+                            [% Data.ConfigItemLinkSourceSelectionHTML %]
+                        </div>
+                        <div class="Clear"></div>
+
+                        <div class="SpacingTop"></div>
+                        <label for="ConfigItemLinkRemoval">[% Translate("Config item link removal") | html %]:</label>
+                        <div class="Field">
+                            [% Data.ConfigItemLinkRemovalSelectionHTML %]
+                            <p class="FieldExplanation">[% Translate("Activate this option to remove links between the ticket and config items removed from this field.") | html %]</p>
+                        </div>
+                        <div class="Clear"></div>
                     </fieldset>
                 </div>
             </div>

@@ -36,8 +36,10 @@ my @DynamicFields = (
         ObjectType    => 'Ticket',
         FieldType     => 'ConfigItemDropdown',
         Config        => {
-            ConfigItemClass => 'Computer'
-
+            ConfigItemClass       => 'Computer',
+            ConfigItemLinkType    => 'DependsOn',
+            ConfigItemLinkSource  => 'Ticket',
+            ConfigItemLinkRemoval => 0,
         },
     },
     {
@@ -47,7 +49,10 @@ my @DynamicFields = (
         ObjectType    => 'Ticket',
         FieldType     => 'ConfigItemMultiselect',
         Config        => {
-            ConfigItemClass => 'Computer'
+            ConfigItemClass       => 'Computer',
+            ConfigItemLinkType    => 'AlternativeTo',
+            ConfigItemLinkSource  => 'ITSMConfigItem',
+            ConfigItemLinkRemoval => 1,
         },
     },
 );
@@ -179,7 +184,12 @@ $Self->IsDeeply(
     $LinkList,
     {
         ITSMConfigItem => {
-            RelevantTo => {
+            DependsOn => {
+                Target => {
+                    $Version1->{ConfigItemID} => 1,
+                },
+            },
+            AlternativeTo => {
                 Source => {
                     $Version1->{ConfigItemID} => 1,
                     $Version2->{ConfigItemID} => 1,
@@ -252,7 +262,15 @@ $Self->IsDeeply(
     $LinkList,
     {
         ITSMConfigItem => {
-            RelevantTo => {
+            DependsOn => {
+                Target => {
+                    $Version2->{ConfigItemID} => 1,
+
+                    # Because dropdown field is configured to not remove links to removed config items.
+                    $Version1->{ConfigItemID} => 1,
+                },
+            },
+            AlternativeTo => {
                 Source => {
                     $Version1->{ConfigItemID} => 1,
                     $Version3->{ConfigItemID} => 1,

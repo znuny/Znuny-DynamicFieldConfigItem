@@ -11,8 +11,8 @@
     <Vendor>Znuny GmbH</Vendor>
     <URL>http://znuny.com/</URL>
     <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
-    <Description Lang="en">Adds dynamic field type for config items.</Description>
-    <Description Lang="de">Ergänzt einen dynamischen Feldtyp für Config-Items.</Description>
+    <Description Lang="en">Adds dynamic field types for config items.</Description>
+    <Description Lang="de">Ergänzt dynamische Feldtypen für Config-Items.</Description>
     <Filelist>
         <File Permission="660" Location="Kernel/Config/Files/XML/Znuny4OTRSDynamicFieldConfigItem.xml"/>
         <File Permission="660" Location="Kernel/Language/de_Znuny4OTRSDynamicFieldConfigItem.pm"/>
@@ -23,5 +23,22 @@
         <File Permission="660" Location="Kernel/System/DynamicField/Driver/ConfigItemMultiselect.pm"/>
         <File Permission="660" Location="Kernel/System/Ticket/Event/Znuny4OTRSDynamicFieldConfigItem.pm"/>
         <File Permission="660" Location="scripts/test/Znuny4OTRSDynamicFieldConfigItem/System/Ticket/Event/Znuny4OTRSDynamicFieldConfigItem.t"/>
+        <File Permission="660" Location="var/httpd/htdocs/js/Core.Agent.Admin.Znuny4OTRSDynamicFieldConfigItem.js"/>
+        <File Permission="660" Location="var/packagesetup/Znuny4OTRSDynamicFieldConfigItem.pm"/>
     </Filelist>
+    <CodeUninstall Type="pre"><![CDATA[
+        $Kernel::OM->Get('var::packagesetup::Znuny4OTRSDynamicFieldConfigItem')->CodeUninstall();
+    ]]></CodeUninstall>
+    <CodeInstall Type="post"><![CDATA[
+        $Kernel::OM->Get('var::packagesetup::Znuny4OTRSDynamicFieldConfigItem')->CodeInstall();
+    ]]></CodeInstall>
+    <CodeUpgrade Type="post"><![CDATA[
+        $Kernel::OM->Get('var::packagesetup::Znuny4OTRSDynamicFieldConfigItem')->CodeUpgrade();
+    ]]></CodeUpgrade>
+    <CodeUpgrade Type="post" Version="6.0.2"><![CDATA[
+        $Kernel::OM->Get('var::packagesetup::Znuny4OTRSDynamicFieldConfigItem')->CodeUpgradeFromLowerThan602();
+    ]]></CodeUpgrade>
+    <CodeReinstall Type="post"><![CDATA[
+        $Kernel::OM->Get('var::packagesetup::Znuny4OTRSDynamicFieldConfigItem')->CodeReinstall();
+    ]]></CodeReinstall>
 </otrs_package>

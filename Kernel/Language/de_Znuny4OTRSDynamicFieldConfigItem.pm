@@ -17,10 +17,14 @@ sub Data {
     my $Self = shift;
 
     # Frontend
+    $Self->{Translation}->{'Config item'}                   = 'Config-Item';
     $Self->{Translation}->{'Config item (multiselect)'}     = 'Config-Item (Mehrfachauswahl)';
     $Self->{Translation}->{'Config item (dropdown)'}        = 'Config-Item (Einfachauswahl)';
     $Self->{Translation}->{'Config item class'}             = 'Config-Item-Klasse';
     $Self->{Translation}->{'Config item deployment states'} = 'Config-Item-Verwendungsstatus';
+    $Self->{Translation}->{'Config item link type'}         = 'Config-Item-Linktyp';
+    $Self->{Translation}->{'Config item link source'}       = 'Config-Item-Linkquelle';
+    $Self->{Translation}->{'Config item link removal'}      = 'Config-Item-Links entfernen';
     $Self->{Translation}->{'Add %s field'}                  = 'Feld %s hinzufügen';
     $Self->{Translation}->{'Change %s field'}               = 'Feld %s ändern';
 
@@ -43,6 +47,12 @@ sub Data {
     $Self->{Translation}->{"This is the name to be shown on the screens where the field is active."}                 = "Dies ist der Name, der in den Dialogen angezeigt werden soll, in denen das Feld aktiv ist.";
     $Self->{Translation}->{"This is the order in which this field will be shown on the screens where it is active."} = "Dies ist die Reihenfolge, in der dieses Feld in den aktiven Dialogen angezeigt wird.";
 
+    $Self->{Translation}->{'Select a link type to enable linking between the ticket and the selected config items. Note that linking is only availabe for dynamic fields of tickets.'}
+        = 'Wählen Sie einen Linktyp, um die Verknüpfung zwischen Ticket und gewählten Config-Items zu aktivieren. Beachten Sie, dass die Verknüpfung nur für dynamische Felder von Tickets zur Verfügung steht.';
+
+    $Self->{Translation}->{'Activate this option to remove links between the ticket and config items removed from this field.'}
+        = 'Aktivieren Sie diese Option, um Verknüpfungen zwischen Ticket und Config-Items zu entfernen, die aus diesem Feld entfernt wurden.';
+
     # SysConfig
     $Self->{Translation}->{"Frontend module registration for the agent interface."}                                       = "Registrierung des Frontend-Moduls für die Agentenschnittstelle.";
     $Self->{Translation}->{"Creates a link between ticket and config item after setting the value in the dynamic field."} = "Erstellt einen Link zwischen Ticket und Config-Item nach dem Setzen des Wertes im dynamischen Feld.";
@@ -52,6 +62,9 @@ sub Data {
     $Self->{Translation}->{"AlternativeTo"} = "Alternativ zu";
     $Self->{Translation}->{"DependsOn"}     = "Hängt ab von";
     $Self->{Translation}->{"RelevantTo"}    = "Relevant für";
+
+    $Self->{Translation}->{'No longer in use. Do not change. Required due to compatibility with previous package versions.'}
+        = 'Nicht mehr in Verwendung. Nicht ändern. Notwendig wg. Kompatibilität zu vorherigen Paketversionen.';
 
     return 1;
 }

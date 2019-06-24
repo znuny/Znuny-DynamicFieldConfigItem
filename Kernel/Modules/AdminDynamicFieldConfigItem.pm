@@ -16,11 +16,13 @@ our @ObjectDependencies = (
     'Kernel::Output::HTML::Layout',
     'Kernel::System::DynamicField',
     'Kernel::System::GeneralCatalog',
+    'Kernel::System::LinkObject',
     'Kernel::System::Valid',
     'Kernel::System::Web::Request',
 );
 
 use Kernel::System::VariableCheck qw(:all);
+use Kernel::Language qw(Translatable);
 
 our $ObjectManagerDisabled = 1;
 
@@ -45,6 +47,11 @@ sub Run {
     my ( $Self, %Param ) = @_;
 
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
+    $LayoutObject->AddJSOnDocumentCompleteIfNotExists(
+        Key  => 'AdminDynamicFieldConfigItem',
+        Code => 'Core.Agent.Admin.Znuny4OTRSDynamicFieldConfigItem.Init();',
+    );
 
     if ( $Self->{Subaction} eq 'Add' ) {
         return $Self->_Add(
@@ -170,7 +177,10 @@ sub _AddAction {
         }
     }
 
-    for my $ConfigParam (qw(ObjectType ObjectTypeName FieldType FieldTypeName ValidID ConfigItemClass)) {
+    for my $ConfigParam (
+        qw(ObjectType ObjectTypeName FieldType FieldTypeName ValidID ConfigItemClass ConfigItemLinkType ConfigItemLinkSource ConfigItemLinkRemoval)
+        )
+    {
         $GetParam{$ConfigParam} = $ParamObject->GetParam( Param => $ConfigParam );
     }
 
@@ -216,13 +226,12 @@ sub _AddAction {
         $DynamicFieldConfig = $DynamicFieldDriverRegistration->{ $GetParam{FieldType} }->{Config};
     }
 
-    # overwrite config item class
-    if ( $GetParam{ConfigItemClass} ) {
-        $DynamicFieldConfig->{ConfigItemClass} = $GetParam{ConfigItemClass};
-    }
+    # overwrite dynamic field configs
+    KEY:
+    for my $Key (qw( ConfigItemClass DeplStateIDs ConfigItemLinkType ConfigItemLinkSource ConfigItemLinkRemoval )) {
+        next KEY if !$GetParam{$Key};
 
-    if ( $GetParam{DeplStateIDs} ) {
-        $DynamicFieldConfig->{DeplStateIDs} = $GetParam{DeplStateIDs};
+        $DynamicFieldConfig->{$Key} = $GetParam{$Key};
     }
 
     # create a new field
@@ -300,7 +309,7 @@ sub _Change {
     return $Self->_ShowScreen(
         %Param,
         %GetParam,
-        %${DynamicFieldData},
+        %{$DynamicFieldData},
         %Config,
         ID             => $FieldID,
         Mode           => 'Change',
@@ -397,7 +406,10 @@ sub _ChangeAction {
         }
     }
 
-    for my $ConfigParam (qw(ObjectType ObjectTypeName FieldType FieldTypeName DefaultValue ValidID)) {
+    for my $ConfigParam (
+        qw(ObjectType ObjectTypeName FieldType FieldTypeName DefaultValue ValidID ConfigItemLinkType ConfigItemLinkSource ConfigItemLinkRemoval)
+        )
+    {
         $GetParam{$ConfigParam} = $ParamObject->GetParam( Param => $ConfigParam );
     }
 
@@ -410,6 +422,10 @@ sub _ChangeAction {
     );
     $GetParam{DeplStateIDs} = \@DeplStateIDs;
     $DynamicFieldData->{Config}->{DeplStateIDs} = \@DeplStateIDs;
+
+    $DynamicFieldData->{Config}->{ConfigItemLinkType}    = $GetParam{ConfigItemLinkType};
+    $DynamicFieldData->{Config}->{ConfigItemLinkSource}  = $GetParam{ConfigItemLinkSource};
+    $DynamicFieldData->{Config}->{ConfigItemLinkRemoval} = $GetParam{ConfigItemLinkRemoval};
 
     if ( !$GetParam{ValidID} ) {
         return $LayoutObject->ErrorScreen(
@@ -466,6 +482,7 @@ sub _ShowScreen {
     my $GeneralCatalogObject = $Kernel::OM->Get('Kernel::System::GeneralCatalog');
     my $LayoutObject         = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $ValidObject          = $Kernel::OM->Get('Kernel::System::Valid');
+    my $LinkObject           = $Kernel::OM->Get('Kernel::System::LinkObject');
 
     $Param{DisplayFieldName} = 'New';
 
@@ -564,7 +581,7 @@ sub _ShowScreen {
         Sort         => 'AlphanumericKey',
     );
 
-    # selection of deployment states
+    # selection of deployment status
     my $DeplStates = $GeneralCatalogObject->ItemList(
         Class => 'ITSM::ConfigItem::DeploymentState',
     );
@@ -578,14 +595,60 @@ sub _ShowScreen {
         SelectedID   => $Param{DeplStateIDs},
     );
 
+    # selection of link type
+    my %PossibleConfigItemLinkTypes = $LinkObject->PossibleTypesList(
+        Object1 => $Param{ObjectType},
+        Object2 => 'ITSMConfigItem',
+    );
+
+    my @PossibleConfigItemLinkTypes = keys %PossibleConfigItemLinkTypes;
+
+    my $ConfigItemLinkTypeSelectionHTML = $LayoutObject->BuildSelection(
+        Data          => \@PossibleConfigItemLinkTypes,
+        Name          => 'ConfigItemLinkType',
+        PossibleNone  => 1,
+        Class         => 'Modernize',
+        Multiple      => 0,
+        SelectedValue => $Param{ConfigItemLinkType},
+    );
+
+    # selection of config item link source
+    my %ConfigItemLinkSources = (
+        ITSMConfigItem     => 'Config item',
+        $Param{ObjectType} => $Param{ObjectType},
+    );
+
+    my $ConfigItemLinkSourceSelectionHTML = $LayoutObject->BuildSelection(
+        Data         => \%ConfigItemLinkSources,
+        Name         => 'ConfigItemLinkSource',
+        PossibleNone => 0,
+        Class        => 'Modernize',
+        Multiple     => 0,
+        SelectedID   => $Param{ConfigItemLinkSource},
+    );
+
+    # selection for config item link removal
+    my $ConfigItemLinkRemovalSelectionHTML = $LayoutObject->BuildSelection(
+        Data => {
+            0 => Translatable('No'),
+            1 => Translatable('Yes'),
+        },
+        Name       => 'ConfigItemLinkRemoval',
+        SelectedID => $Param{ConfigItemLinkRemoval} // 1,
+        Class      => 'Modernize',
+    );
+
     $Output .= $LayoutObject->Output(
         TemplateFile => 'AdminDynamicFieldConfigItem',
         Data         => {
             %Param,
-            DeplStateSelectionHTML => $DeplStateSelectionHTML,
-            ValidityStrg           => $ValidityStrg,
-            DynamicFieldOrderStrg  => $DynamicFieldOrderStrg,
-            ReadonlyInternalField  => $ReadonlyInternalField,
+            DeplStateSelectionHTML             => $DeplStateSelectionHTML,
+            ConfigItemLinkTypeSelectionHTML    => $ConfigItemLinkTypeSelectionHTML,
+            ConfigItemLinkSourceSelectionHTML  => $ConfigItemLinkSourceSelectionHTML,
+            ConfigItemLinkRemovalSelectionHTML => $ConfigItemLinkRemovalSelectionHTML,
+            ValidityStrg                       => $ValidityStrg,
+            DynamicFieldOrderStrg              => $DynamicFieldOrderStrg,
+            ReadonlyInternalField              => $ReadonlyInternalField,
             }
     );
 

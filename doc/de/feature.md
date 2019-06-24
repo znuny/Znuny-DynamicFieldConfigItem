@@ -14,3 +14,9 @@ Weiterhin können die zur Verfügung stehenden Config-Items durch die Konfigurat
 Bei der Ausgabe des dynamischen Felds werden die Namen der gewählten Config-Items angezeigt.
 
 __HINWEIS:__ Sollte durch Umkonfiguration der Verwendungsstatus in einem dynamischen Feld der jeweils im Objekt (Ticket, Artikel) gespeicherte Wert nicht mehr zur Verfügung stehen, so wird dieser für das Objekt bei der nächsten Bearbeitung auf leer gesetzt.
+
+## Verlinkung
+
+Config-Items können mit Tickets verlinkt werden. Sobald ein dynamisches Feld der beiden obigen Typen im Ticket-Kontext erzeugt wird, kann gewählt werden, welcher Linktyp verwendet werden soll. Außerdem kann die Linkrichtung bestimmt werden, also Config-Item zu Ticket oder umgekehrt.
+
+Für jedes dynamische Feld der beiden obigen Typen kann bestimmt werden, ob die Links zwischen Ticket und Config-Item ebenfalls entfernt oder beibehalten werden sollen.

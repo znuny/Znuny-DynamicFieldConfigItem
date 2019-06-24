@@ -14,7 +14,6 @@ use warnings;
 use Kernel::System::VariableCheck qw(:all);
 
 our @ObjectDependencies = (
-    'Kernel::Config',
     'Kernel::System::DynamicField',
     'Kernel::System::LinkObject',
     'Kernel::System::Log',
@@ -35,12 +34,8 @@ sub Run {
 
     my $LogObject          = $Kernel::OM->Get('Kernel::System::Log');
     my $TicketObject       = $Kernel::OM->Get('Kernel::System::Ticket');
-    my $ConfigObject       = $Kernel::OM->Get('Kernel::Config');
     my $LinkObject         = $Kernel::OM->Get('Kernel::System::LinkObject');
     my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
-
-    my $Config = $ConfigObject->Get('Znuny4OTRSDynamicFieldConfigItem');
-    return if !$Config->{TicketLink};
 
     NEEDED:
     for my $Needed (qw( Data Event Config UserID )) {
@@ -64,14 +59,21 @@ sub Run {
         return;
     }
 
+    my %ValidDynamicFieldTypes = (
+        ConfigItemDropdown    => 1,
+        ConfigItemMultiselect => 1,
+    );
+
     my $DynamicField = $DynamicFieldObject->DynamicFieldGet(
         Name => $Param{Data}->{FieldName}
     );
-    return
-        if $DynamicField->{FieldType} ne 'ConfigItemMultiselect' && $DynamicField->{FieldType} ne 'ConfigItemDropdown';
+    return if !$ValidDynamicFieldTypes{ $DynamicField->{FieldType} };
+
+    # Skip, if no link type is configured.
+    my $LinkType = $DynamicField->{Config}->{ConfigItemLinkType};
+    return if !$LinkType;
 
     my $TicketID = $Param{Data}->{TicketID};
-    my $LinkType = $Config->{LinkType} || 'RelevantTo';
 
     my $LinkList = $LinkObject->LinkList(
         Object  => 'Ticket',
@@ -97,42 +99,73 @@ sub Run {
         @OldValues = $Param{Data}->{OldValue};
     }
 
-    if (@OldValues) {
-        my @NewOldValues;
+    my $SourceObject = $DynamicField->{Config}->{ConfigItemLinkSource};
+    my $SourceKey;
+    my $TargetObject;
+    my $TargetKey;
 
-        VALUE:
-        for my $Value (@OldValues) {
-            my $Exists = grep { $Value eq $_ } @NewValues;
-            next VALUE if $Exists;
+    if ( $SourceObject eq 'ITSMConfigItem' ) {
+        $TargetObject = $DynamicField->{ObjectType};
+        $TargetKey    = $TicketID;
+    }
+    else {
+        $SourceKey    = $TicketID;
+        $TargetObject = 'ITSMConfigItem';
+    }
 
-            push @NewOldValues, $Value;
+    # Remove links for removed config items (only if activated).
+    my $ConfigItemLinkRemoval = $DynamicField->{Config}->{ConfigItemLinkRemoval};
+    if ( @OldValues && $ConfigItemLinkRemoval ) {
+        my @DeselectedConfigItemIDs;
 
+        CONFIGITEMID:
+        for my $ConfigItemID (@OldValues) {
+            my $ConfigItemIDStillSelected = grep { $ConfigItemID eq $_ } @NewValues;
+            next CONFIGITEMID if $ConfigItemIDStillSelected;
+
+            push @DeselectedConfigItemIDs, $ConfigItemID;
         }
 
-        CONFIGITEM:
-        for my $ConfigItemID (@NewOldValues) {
-            next CONFIGITEM if !$LinkList->{ITSMConfigItem}->{$LinkType}->{Source}->{$ConfigItemID};
+        CONFIGITEMID:
+        for my $ConfigItemID (@DeselectedConfigItemIDs) {
+            next CONFIGITEMID if !$LinkList->{ITSMConfigItem}->{$LinkType}->{Source}->{$ConfigItemID}
+                && !$LinkList->{ITSMConfigItem}->{$LinkType}->{Target}->{$ConfigItemID};
+
+            if ( $SourceObject eq 'ITSMConfigItem' ) {
+                $SourceKey = $ConfigItemID;
+            }
+            else {
+                $TargetKey = $ConfigItemID;
+            }
 
             $LinkObject->LinkDelete(
-                Object1 => 'ITSMConfigItem',
-                Key1    => $ConfigItemID,
-                Object2 => 'Ticket',
-                Key2    => $TicketID,
+                Object1 => $SourceObject,
+                Key1    => $SourceKey,
+                Object2 => $TargetObject,
+                Key2    => $TargetKey,
                 Type    => $LinkType,
                 UserID  => 1,
             );
         }
     }
 
-    CONFIGITEM:
+    # Add links for added config items.
+    CONFIGITEMID:
     for my $ConfigItemID (@NewValues) {
-        next CONFIGITEM if $LinkList->{ITSMConfigItem}->{$LinkType}->{Source}->{$ConfigItemID};
+        next CONFIGITEMID if $LinkList->{ITSMConfigItem}->{$LinkType}->{Source}->{$ConfigItemID};
+
+        if ( $SourceObject eq 'ITSMConfigItem' ) {
+            $SourceKey = $ConfigItemID;
+        }
+        else {
+            $TargetKey = $ConfigItemID;
+        }
 
         $LinkObject->LinkAdd(
-            SourceObject => 'ITSMConfigItem',
-            SourceKey    => $ConfigItemID,
-            TargetObject => 'Ticket',
-            TargetKey    => $TicketID,
+            SourceObject => $SourceObject,
+            SourceKey    => $SourceKey,
+            TargetObject => $TargetObject,
+            TargetKey    => $TargetKey,
             Type         => $LinkType,
             State        => 'Valid',
             UserID       => 1,
