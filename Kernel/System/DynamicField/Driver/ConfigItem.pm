@@ -247,7 +247,8 @@ sub PossibleValuesGet {
         $PossibleValues{ $ConfigItem->{ConfigItemID} } = $ConfigItem->{Name};
     }
 
-    # add empty value, none of the config item fields can be a mandatory field
+    # Add empty value, none of the config item fields can have a default or pre-selected value
+    # because the selectable values may change dependingon deployment state.
     $PossibleValues{''} = '-';
 
     return \%PossibleValues;
