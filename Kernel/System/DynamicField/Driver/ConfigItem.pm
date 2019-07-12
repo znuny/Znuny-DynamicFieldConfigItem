@@ -248,7 +248,7 @@ sub PossibleValuesGet {
     }
 
     # Add empty value, none of the config item fields can have a default or pre-selected value
-    # because the selectable values may change dependingon deployment state.
+    # because the selectable values may change depending on deployment state.
     $PossibleValues{''} = '-';
 
     return \%PossibleValues;
