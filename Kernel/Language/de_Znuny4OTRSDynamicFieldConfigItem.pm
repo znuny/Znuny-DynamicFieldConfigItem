@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2012-2019 Znuny GmbH, http://znuny.com/
+# Copyright (C) 2012-2020 Znuny GmbH, http://znuny.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -10,7 +10,6 @@ package Kernel::Language::de_Znuny4OTRSDynamicFieldConfigItem;
 
 use strict;
 use warnings;
-
 use utf8;
 
 sub Data {
@@ -23,6 +22,7 @@ sub Data {
     $Self->{Translation}->{'Config item class'}             = 'Config-Item-Klasse';
     $Self->{Translation}->{'Config item deployment states'} = 'Config-Item-Verwendungsstatus';
     $Self->{Translation}->{'Config item link type'}         = 'Config-Item-Linktyp';
+    $Self->{Translation}->{'Config item key'}               = 'Config-Item-Schlüssel';
     $Self->{Translation}->{'Config item link source'}       = 'Config-Item-Linkquelle';
     $Self->{Translation}->{'Config item link removal'}      = 'Config-Item-Links entfernen';
     $Self->{Translation}->{'Add %s field'}                  = 'Feld %s hinzufügen';
@@ -46,6 +46,13 @@ sub Data {
     $Self->{Translation}->{"This field is required."}                                                                = "Dies ist ein Pflichtfeld.";
     $Self->{Translation}->{"This is the name to be shown on the screens where the field is active."}                 = "Dies ist der Name, der in den Dialogen angezeigt werden soll, in denen das Feld aktiv ist.";
     $Self->{Translation}->{"This is the order in which this field will be shown on the screens where it is active."} = "Dies ist die Reihenfolge, in der dieses Feld in den aktiven Dialogen angezeigt wird.";
+    $Self->{Translation}->{'Dynamic field is configured more than once.'}                                            = 'Dynamisches Feld ist mehrmals konfiguriert.';
+    $Self->{Translation}->{'Dynamic field does not exist or is invalid.'}                                            = 'Dynamisches Feld existiert nicht oder ist ungültig.';
+    $Self->{Translation}->{'Only dynamic fields for tickets are allowed.'}                                           = 'Nur dynamische Ticketfelder sind erlaubt.';
+
+    $Self->{Translation}->{'These dynamic fields will be filled with values of the same selected config item(s).'}
+        = 'Diese dynamischen Felder werden mit den Werten aus dem/den gewählten Config-Item(s) befüllt.';
+
 
     $Self->{Translation}->{'Select a link type to enable linking between the ticket and the selected config items. Note that linking is only availabe for dynamic fields of tickets.'}
         = 'Wählen Sie einen Linktyp, um die Verknüpfung zwischen Ticket und gewählten Config-Items zu aktivieren. Beachten Sie, dass die Verknüpfung nur für dynamische Felder von Tickets zur Verfügung steht.';
@@ -65,6 +72,9 @@ sub Data {
 
     $Self->{Translation}->{'No longer in use. Do not change. Required due to compatibility with previous package versions.'}
         = 'Nicht mehr in Verwendung. Nicht ändern. Notwendig wg. Kompatibilität zu vorherigen Paketversionen.';
+
+    $Self->{Translation}->{'Frontend and Backend'} = 'Oberfläche und Backend';
+    $Self->{Translation}->{'Add dynamic field'}    = 'Dynamisches Feld hinzufügen';
 
     return 1;
 }

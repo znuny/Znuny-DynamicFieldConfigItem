@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2012-2019 Znuny GmbH, http://znuny.com/
+# Copyright (C) 2012-2020 Znuny GmbH, http://znuny.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -16,6 +16,7 @@ use Kernel::System::VariableCheck qw(:all);
 use mro 'c3';
 
 our @ObjectDependencies = (
+    'Kernel::Output::HTML::Layout',
     'Kernel::System::GeneralCatalog',
     'Kernel::System::ITSMConfigItem',
 );
@@ -62,6 +63,26 @@ sub SearchSQLOrderFieldGet {
 
 sub EditFieldRender {
     my ( $Self, %Param ) = @_;
+
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
+    # Initialize storage of additional dynamic fields in frontend, if configured.
+    # Only dynamic fields of object type 'Ticket' are supported for this.
+    if ( $Param{DynamicFieldConfig}->{ObjectType} eq 'Ticket' ) {
+        my $AdditionalDFStorageConfig = $Param{DynamicFieldConfig}->{Config}->{AdditionalDFStorage};
+        if ( IsArrayRefWithData($AdditionalDFStorageConfig) ) {
+            my @AdditionalDFStorageConfigForFrontend = grep { $_->{Type} ne 'Backend' }
+                @{$AdditionalDFStorageConfig};
+
+            if (@AdditionalDFStorageConfigForFrontend) {
+                my $DynamicFieldName = $Param{DynamicFieldConfig}->{Name};
+
+                $LayoutObject->AddJSOnDocumentComplete(
+                    Code => "Core.Znuny4OTRSDynamicFieldConfigItem.InitAdditionalDFStorage('$DynamicFieldName');",
+                );
+            }
+        }
+    }
 
     $Param{DynamicFieldConfig}->{Config}->{PossibleValues} = $Self->PossibleValuesGet(%Param);
 

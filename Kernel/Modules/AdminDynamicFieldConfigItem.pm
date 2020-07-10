@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2012-2019 Znuny GmbH, http://znuny.com/
+# Copyright (C) 2012-2020 Znuny GmbH, http://znuny.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -34,10 +34,7 @@ sub new {
     my $Self = {%Param};
     bless( $Self, $Type );
 
-    # get configured object types
     $Self->{ObjectTypeConfig} = $ConfigObject->Get('DynamicFields::ObjectType');
-
-    # get the fields config
     $Self->{FieldTypeConfig} = $ConfigObject->Get('DynamicFields::Driver') || {};
 
     return $Self;
@@ -54,28 +51,20 @@ sub Run {
     );
 
     if ( $Self->{Subaction} eq 'Add' ) {
-        return $Self->_Add(
-            %Param,
-        );
+        return $Self->_Add(%Param);
     }
     elsif ( $Self->{Subaction} eq 'AddAction' ) {
         $LayoutObject->ChallengeTokenCheck();
 
-        return $Self->_AddAction(
-            %Param,
-        );
+        return $Self->_AddAction(%Param);
     }
-    if ( $Self->{Subaction} eq 'Change' ) {
-        return $Self->_Change(
-            %Param,
-        );
+    elsif ( $Self->{Subaction} eq 'Change' ) {
+        return $Self->_Change(%Param);
     }
     elsif ( $Self->{Subaction} eq 'ChangeAction' ) {
         $LayoutObject->ChallengeTokenCheck();
 
-        return $Self->_ChangeAction(
-            %Param,
-        );
+        return $Self->_ChangeAction(%Param);
     }
 
     return $LayoutObject->ErrorScreen(
@@ -93,15 +82,13 @@ sub _Add {
     NEEDED:
     for my $Needed (qw(ObjectType FieldType FieldOrder)) {
         $GetParam{$Needed} = $ParamObject->GetParam( Param => $Needed );
-
-        next NEEDED if $Needed;
+        next NEEDED if defined $GetParam{$Needed} && length $GetParam{$Needed};
 
         return $LayoutObject->ErrorScreen(
             Message => "Need $Needed.",
         );
     }
 
-    # get the object type and field type display name
     my $ObjectTypeName = $Self->{ObjectTypeConfig}->{ $GetParam{ObjectType} }->{DisplayName} || '';
     my $FieldTypeName  = $Self->{FieldTypeConfig}->{ $GetParam{FieldType} }->{DisplayName}   || '';
 
@@ -130,8 +117,7 @@ sub _AddAction {
     NEEDED:
     for my $Needed (qw(Name Label FieldOrder)) {
         $GetParam{$Needed} = $ParamObject->GetParam( Param => $Needed );
-
-        next NEEDED if $GetParam{$Needed};
+        next NEEDED if defined $GetParam{$Needed} && length $GetParam{$Needed};
 
         $Errors{ $Needed . 'ServerError' }        = 'ServerError';
         $Errors{ $Needed . 'ServerErrorMessage' } = 'This field is required.';
@@ -141,8 +127,6 @@ sub _AddAction {
 
         # check if name is alphanumeric
         if ( $GetParam{Name} !~ m{\A (?: [a-zA-Z] | \d )+ \z}xms ) {
-
-            # add server error error class
             $Errors{NameServerError} = 'ServerError';
             $Errors{NameServerErrorMessage} =
                 'The field does not contain only ASCII letters and numbers.';
@@ -155,12 +139,9 @@ sub _AddAction {
                 ResultType => 'HASH',
                 )
         };
-
         %DynamicFieldsList = reverse %DynamicFieldsList;
 
         if ( $DynamicFieldsList{ $GetParam{Name} } ) {
-
-            # add server error error class
             $Errors{NameServerError}        = 'ServerError';
             $Errors{NameServerErrorMessage} = 'There is another field with the same name.';
         }
@@ -170,8 +151,6 @@ sub _AddAction {
 
         # check if field order is numeric and positive
         if ( $GetParam{FieldOrder} !~ m{\A (?: \d )+ \z}xms ) {
-
-            # add server error error class
             $Errors{FieldOrderServerError}        = 'ServerError';
             $Errors{FieldOrderServerErrorMessage} = 'The field must be numeric.';
         }
@@ -199,12 +178,16 @@ sub _AddAction {
         );
     }
 
-    # check config item class
     if ( !$GetParam{ConfigItemClass} ) {
         $Errors{ConfigItemClassServerError} = 'ServerError';
     }
 
-    # return to add screen if errors
+    my @AdditionalDFStorage = $Self->_AdditionalDFStorageGet();
+    $GetParam{AdditionalDFStorage} = \@AdditionalDFStorage;
+
+    my %AdditionalDFStorageErrors = $Self->_AdditionalDFStorageValidate(%GetParam);
+    %Errors = ( %Errors, %AdditionalDFStorageErrors );
+
     if (%Errors) {
         return $Self->_ShowScreen(
             %Param,
@@ -226,15 +209,16 @@ sub _AddAction {
         $DynamicFieldConfig = $DynamicFieldDriverRegistration->{ $GetParam{FieldType} }->{Config};
     }
 
-    # overwrite dynamic field configs
+    # overwrite dynamic field config
     KEY:
-    for my $Key (qw( ConfigItemClass DeplStateIDs ConfigItemLinkType ConfigItemLinkSource ConfigItemLinkRemoval )) {
-        next KEY if !$GetParam{$Key};
-
+    for my $Key (
+        qw( ConfigItemClass DeplStateIDs ConfigItemLinkType ConfigItemLinkSource ConfigItemLinkRemoval AdditionalDFStorage )
+        )
+    {
+        next KEY if !defined $GetParam{$Key};
         $DynamicFieldConfig->{$Key} = $GetParam{$Key};
     }
 
-    # create a new field
     my $FieldID = $DynamicFieldObject->DynamicFieldAdd(
         Name       => $GetParam{Name},
         Label      => $GetParam{Label},
@@ -264,20 +248,6 @@ sub _Change {
     my $LayoutObject       = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $ParamObject        = $Kernel::OM->Get('Kernel::System::Web::Request');
 
-    my %GetParam;
-    for my $Needed (qw(ObjectType FieldType ConfigItemClass)) {
-        $GetParam{$Needed} = $ParamObject->GetParam( Param => $Needed );
-        if ( !$Needed ) {
-            return $LayoutObject->ErrorScreen(
-                Message => "Need $Needed.",
-            );
-        }
-    }
-
-    # get the object type and field type display name
-    my $ObjectTypeName = $Self->{ObjectTypeConfig}->{ $GetParam{ObjectType} }->{DisplayName} || '';
-    my $FieldTypeName  = $Self->{FieldTypeConfig}->{ $GetParam{FieldType} }->{DisplayName}   || '';
-
     my $FieldID = $ParamObject->GetParam( Param => 'ID' );
     if ( !$FieldID ) {
         return $LayoutObject->ErrorScreen(
@@ -285,31 +255,34 @@ sub _Change {
         );
     }
 
-    my $DynamicFieldData = $DynamicFieldObject->DynamicFieldGet(
+    my $DynamicFieldConfig = $DynamicFieldObject->DynamicFieldGet(
         ID => $FieldID,
     );
-    if ( !IsHashRefWithData($DynamicFieldData) ) {
+    if ( !IsHashRefWithData($DynamicFieldConfig) ) {
         return $LayoutObject->ErrorScreen(
-            Message => "Could not get data for dynamic field $FieldID.",
+            Message => "Could not get config for dynamic field $FieldID.",
         );
     }
 
     my %Config;
-
-    # extract configuration
-    if ( IsHashRefWithData( $DynamicFieldData->{Config} ) ) {
-        %Config = %{ $DynamicFieldData->{Config} };
+    if ( IsHashRefWithData( $DynamicFieldConfig->{Config} ) ) {
+        %Config = %{ $DynamicFieldConfig->{Config} };
     }
 
-    # overwrite config item class
-    if ( $GetParam{ConfigItemClass} ) {
-        $Config{ConfigItemClass} = $GetParam{ConfigItemClass};
-    }
+    # Initialize GetParam with read-only values that cannot be changed anymore in change dialog.
+    my %GetParam = (
+        ObjectType      => $DynamicFieldConfig->{ObjectType},
+        FieldType       => $DynamicFieldConfig->{FieldType},
+        ConfigItemClass => $Config{ConfigItemClass},
+    );
+
+    my $ObjectTypeName = $Self->{ObjectTypeConfig}->{ $GetParam{ObjectType} }->{DisplayName} || '';
+    my $FieldTypeName  = $Self->{FieldTypeConfig}->{ $GetParam{FieldType} }->{DisplayName}   || '';
 
     return $Self->_ShowScreen(
         %Param,
         %GetParam,
-        %{$DynamicFieldData},
+        %{$DynamicFieldConfig},
         %Config,
         ID             => $FieldID,
         Mode           => 'Change',
@@ -333,8 +306,7 @@ sub _ChangeAction {
     NEEDED:
     for my $Needed (qw(Name Label FieldOrder)) {
         $GetParam{$Needed} = $ParamObject->GetParam( Param => $Needed );
-
-        next NEEDED if $GetParam{$Needed};
+        next NEEDED if defined $GetParam{$Needed} && length $GetParam{$Needed};
 
         $Errors{ $Needed . 'ServerError' }        = 'ServerError';
         $Errors{ $Needed . 'ServerErrorMessage' } = 'This field is required.';
@@ -346,12 +318,12 @@ sub _ChangeAction {
             Message => 'Need ID.',
         );
     }
-    my $DynamicFieldData = $DynamicFieldObject->DynamicFieldGet(
+    my $DynamicFieldConfig = $DynamicFieldObject->DynamicFieldGet(
         ID => $FieldID,
     );
-    if ( !IsHashRefWithData($DynamicFieldData) ) {
+    if ( !IsHashRefWithData($DynamicFieldConfig) ) {
         return $LayoutObject->ErrorScreen(
-            Message => "Could not get data for dynamic field $FieldID.",
+            Message => "Could not get config for dynamic field $FieldID.",
         );
     }
 
@@ -372,6 +344,7 @@ sub _ChangeAction {
                 )
         };
         %DynamicFieldsList = reverse %DynamicFieldsList;
+
         if (
             $DynamicFieldsList{ $GetParam{Name} } &&
             $DynamicFieldsList{ $GetParam{Name} } ne $FieldID
@@ -383,15 +356,13 @@ sub _ChangeAction {
 
         # if it's an internal field, its name should not change
         if (
-            $DynamicFieldData->{InternalField} &&
+            $DynamicFieldConfig->{InternalField} &&
             $DynamicFieldsList{ $GetParam{Name} } ne $FieldID
             )
         {
-
-            # add server error class
             $Errors{NameServerError}        = 'ServerError';
             $Errors{NameServerErrorMessage} = 'The name for this field should not change.';
-            $Param{InternalField}           = $DynamicFieldData->{InternalField};
+            $Param{InternalField}           = $DynamicFieldConfig->{InternalField};
         }
     }
 
@@ -399,8 +370,6 @@ sub _ChangeAction {
 
         # check if field order is numeric and positive
         if ( $GetParam{FieldOrder} !~ m{\A (?: \d )+ \z}xms ) {
-
-            # add server error error class
             $Errors{FieldOrderServerError}        = 'ServerError';
             $Errors{FieldOrderServerErrorMessage} = 'The field must be numeric.';
         }
@@ -413,25 +382,31 @@ sub _ChangeAction {
         $GetParam{$ConfigParam} = $ParamObject->GetParam( Param => $ConfigParam );
     }
 
-    # Config item class is read-only in change, so set it to the stored value everytime.
-    $GetParam{ConfigItemClass} = $DynamicFieldData->{Config}->{ConfigItemClass};
+    # Config item class is read-only in change, so set it to the stored value every time.
+    $GetParam{ConfigItemClass} = $DynamicFieldConfig->{Config}->{ConfigItemClass};
 
     my @DeplStateIDs = $ParamObject->GetArray(
         Param => 'DeplStateIDs',
         Raw   => 1,
     );
     $GetParam{DeplStateIDs} = \@DeplStateIDs;
-    $DynamicFieldData->{Config}->{DeplStateIDs} = \@DeplStateIDs;
+    $DynamicFieldConfig->{Config}->{DeplStateIDs} = \@DeplStateIDs;
 
-    $DynamicFieldData->{Config}->{ConfigItemLinkType}    = $GetParam{ConfigItemLinkType};
-    $DynamicFieldData->{Config}->{ConfigItemLinkSource}  = $GetParam{ConfigItemLinkSource};
-    $DynamicFieldData->{Config}->{ConfigItemLinkRemoval} = $GetParam{ConfigItemLinkRemoval};
+    $DynamicFieldConfig->{Config}->{ConfigItemLinkType}    = $GetParam{ConfigItemLinkType};
+    $DynamicFieldConfig->{Config}->{ConfigItemLinkSource}  = $GetParam{ConfigItemLinkSource};
+    $DynamicFieldConfig->{Config}->{ConfigItemLinkRemoval} = $GetParam{ConfigItemLinkRemoval};
 
     if ( !$GetParam{ValidID} ) {
         return $LayoutObject->ErrorScreen(
             Message => 'Need ValidID.',
         );
     }
+
+    my @AdditionalDFStorage = $Self->_AdditionalDFStorageGet();
+    $GetParam{AdditionalDFStorage} = \@AdditionalDFStorage;
+
+    my %AdditionalDFStorageErrors = $Self->_AdditionalDFStorageValidate(%GetParam);
+    %Errors = ( %Errors, %AdditionalDFStorageErrors );
 
     # return to change screen if errors
     if (%Errors) {
@@ -444,15 +419,17 @@ sub _ChangeAction {
         );
     }
 
-    # update dynamic field (FieldType and ObjectType cannot be changed; use old values)
+    $DynamicFieldConfig->{Config}->{AdditionalDFStorage} = $GetParam{AdditionalDFStorage};
+
+    # update dynamic field (FieldType and ObjectType cannot be changed - use old values)
     my $UpdateSuccess = $DynamicFieldObject->DynamicFieldUpdate(
         ID         => $FieldID,
         Name       => $GetParam{Name},
         Label      => $GetParam{Label},
         FieldOrder => $GetParam{FieldOrder},
-        FieldType  => $DynamicFieldData->{FieldType},
-        ObjectType => $DynamicFieldData->{ObjectType},
-        Config     => $DynamicFieldData->{Config} || {},
+        FieldType  => $DynamicFieldConfig->{FieldType},
+        ObjectType => $DynamicFieldConfig->{ObjectType},
+        Config     => $DynamicFieldConfig->{Config} || {},
         ValidID    => $GetParam{ValidID},
         UserID     => $Self->{UserID},
     );
@@ -548,6 +525,11 @@ sub _ShowScreen {
         Translation  => 1,
         Class        => 'W50pc',
     );
+
+    my %ShowParams = $Self->_AdditionalDFStorageShow(
+        %Param
+    );
+    %Param = ( %Param, %ShowParams );
 
     my $ReadonlyInternalField = '';
 
@@ -649,12 +631,253 @@ sub _ShowScreen {
             ValidityStrg                       => $ValidityStrg,
             DynamicFieldOrderStrg              => $DynamicFieldOrderStrg,
             ReadonlyInternalField              => $ReadonlyInternalField,
-            }
+        },
     );
 
     $Output .= $LayoutObject->Footer();
 
     return $Output;
+}
+
+sub _AdditionalDFStorageShow {
+    my ( $Self, %Param ) = @_;
+
+    my $LayoutObject       = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
+
+    my %ShowParams;
+
+    # Only ticket dynamic fields are supported for additional dynamic field storage.
+    return %ShowParams if !$Param{ObjectType};
+    return %ShowParams if $Param{ObjectType} ne 'Ticket';
+
+    my @AdditionalDFStorage;
+    if ( IsArrayRefWithData( $Param{AdditionalDFStorage} ) ) {
+        @AdditionalDFStorage = @{ $Param{AdditionalDFStorage} };
+    }
+
+    $LayoutObject->Block(
+        Name => 'AdditionalDFStorage',
+        Data => {},
+    );
+
+    # Assemble available dynamic fields to be additionally filled.
+    my $AdditionalDynamicFieldConfigs = $DynamicFieldObject->DynamicFieldListGet(
+        ObjectType => 'Ticket',
+    );
+
+    # Filter out dynamic field that is currently being configured. It's not available
+    # to be selected as an additional dynamic field to be filled.
+    my @AdditionalDynamicFieldConfigs = @{$AdditionalDynamicFieldConfigs};
+    if ( defined $Param{Name} ) {
+        @AdditionalDynamicFieldConfigs = grep { $_->{Name} ne $Param{Name} } @{$AdditionalDynamicFieldConfigs};
+    }
+
+    my %AdditionalDynamicFieldSelection
+        = map { $_->{Name} => $_->{Name} . '(' . $_->{Label} . ')' } @AdditionalDynamicFieldConfigs;
+
+    my $AdditionalDFStorageValueCounter = 0;
+    for my $Storage (@AdditionalDFStorage) {
+        my $DynamicField  = $Storage->{DynamicField};
+        my $ConfigItemKey = $Storage->{ConfigItemKey};
+        my $Type          = $Storage->{Type};
+
+        my $DynamicFieldError        = '';
+        my $DynamicFieldErrorMessage = Translatable('This field is required');    # default in template
+
+        my $ConfigItemKeyError        = '';
+        my $ConfigItemKeyErrorMessage = Translatable('This field is required');    # default in template;
+
+        if ( $Param{AdditionalDFStorageErrors} ) {
+
+            # Dynamic field error
+            if ( defined $Param{AdditionalDFStorageErrors}->[$AdditionalDFStorageValueCounter]->{DynamicField} ) {
+                $DynamicFieldError = 'ServerError';
+                $DynamicFieldErrorMessage
+                    = $Param{AdditionalDFStorageErrors}->[$AdditionalDFStorageValueCounter]->{DynamicField};
+            }
+
+            # Config item key error
+            if ( defined $Param{AdditionalDFStorageErrors}->[$AdditionalDFStorageValueCounter]->{ConfigItemKey} ) {
+                $ConfigItemKeyError = 'ServerError';
+                $ConfigItemKeyErrorMessage
+                    = $Param{AdditionalDFStorageErrors}->[$AdditionalDFStorageValueCounter]->{ConfigItemKey};
+            }
+        }
+
+        $AdditionalDFStorageValueCounter++;
+
+        my $DynamicFieldSelection = $LayoutObject->BuildSelection(
+            Data         => \%AdditionalDynamicFieldSelection,
+            Sort         => 'AlphanumericValue',
+            Name         => 'DynamicField_' . $AdditionalDFStorageValueCounter,
+            SelectedID   => $DynamicField,
+            PossibleNone => 1,
+            Translation  => 0,
+            Class        => "Modernize VariableWidth DataTable Validate_Required $DynamicFieldError",
+        );
+
+        my $TypeOption = $LayoutObject->BuildSelection(
+            Data => {
+                Frontend        => 'Frontend',
+                Backend         => 'Backend',
+                FrontendBackend => 'Frontend and Backend',
+            },
+            Sort           => 'IndividualKey',
+            SortIndividual => [ 'Backend', 'Frontend', 'FrontendBackend' ],
+            Name           => 'Type_' . $AdditionalDFStorageValueCounter,
+            SelectedID     => $Type || 'Backend',
+            PossibleNone   => 0,
+            Translation    => 1,
+            Class          => 'Modernize',
+        );
+
+        # create a value map row
+        $LayoutObject->Block(
+            Name => 'AdditionalDFStorageRow',
+            Data => {
+                AdditionalDFStorageValueCounter => $AdditionalDFStorageValueCounter,
+                DynamicFieldSelection           => $DynamicFieldSelection,
+                DynamicFieldErrorMessage        => $DynamicFieldErrorMessage,
+                ConfigItemKey                   => $ConfigItemKey,
+                ConfigItemKeyError              => $ConfigItemKeyError,
+                ConfigItemKeyErrorMessage       => $ConfigItemKeyErrorMessage,
+                TypeOption                      => $TypeOption,
+            },
+        );
+    }
+
+    $Param{TypeOption} = $LayoutObject->BuildSelection(
+        Data => {
+            Frontend        => 'Frontend',
+            Backend         => 'Backend',
+            FrontendBackend => 'Frontend and Backend',
+        },
+        Sort           => 'IndividualKey',
+        SortIndividual => [ 'Backend', 'Frontend', 'FrontendBackend' ],
+        Name           => 'Type',
+        SelectedID     => $Param{Type} // 'Backend',
+        PossibleNone   => 0,
+        Translation    => 1,
+        Class          => 'Modernize',
+    );
+
+    # create AdditionalDFStorage template
+    $Param{DynamicFieldSelectionTemplate} = $LayoutObject->BuildSelection(
+        Data         => \%AdditionalDynamicFieldSelection,
+        Sort         => 'AlphanumericValue',
+        Name         => 'DynamicField',
+        PossibleNone => 1,
+        Translation  => 0,
+        Class        => 'Modernize VariableWidth DataTable',
+    );
+
+    $LayoutObject->Block(
+        Name => 'AdditionalDFStorageTemplate',
+        Data => {
+            %Param,
+        },
+    );
+
+    $LayoutObject->Block(
+        Name => 'AdditionalDFStorageValueCounter',
+        Data => {
+            AdditionalDFStorageValueCounter => $AdditionalDFStorageValueCounter,
+        },
+    );
+
+    $ShowParams{AdditionalDFStorageValueCounter} = $AdditionalDFStorageValueCounter;
+
+    return %ShowParams;
+}
+
+sub _AdditionalDFStorageGet {
+    my ( $Self, %Param ) = @_;
+
+    my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
+
+    my @AdditionalDFStorage;
+
+    my $ValueCounter = $ParamObject->GetParam( Param => 'AdditionalDFStorageValueCounter' ) // 0;
+
+    VALUECOUNTERINDEX:
+    for my $ValueCounterIndex ( 1 .. $ValueCounter ) {
+        my $DynamicField = $ParamObject->GetParam( Param => 'DynamicField_' . $ValueCounterIndex );
+        next VALUECOUNTERINDEX if !defined $DynamicField;
+
+        my $ConfigItemKey = $ParamObject->GetParam( Param => 'ConfigItemKey_' . $ValueCounterIndex );
+        my $Type          = $ParamObject->GetParam( Param => 'Type_' . $ValueCounterIndex ) // 'Backend';
+
+        push @AdditionalDFStorage, {
+            DynamicField  => $DynamicField,
+            ConfigItemKey => $ConfigItemKey,
+            Type          => $Type,
+        };
+    }
+
+    return @AdditionalDFStorage;
+}
+
+sub _AdditionalDFStorageValidate {
+    my ( $Self, %Param ) = @_;
+
+    my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
+
+    my @AdditionalDFStorage = @{ $Param{AdditionalDFStorage} // [] };
+
+    my %UsedDynamicFields;
+    my @StorageErrorMessages;
+    my $StorageErrorFound;
+
+    STORAGE:
+    for my $Storage (@AdditionalDFStorage) {
+        my $DynamicField  = $Storage->{DynamicField};
+        my $ConfigItemKey = $Storage->{ConfigItemKey};
+        my $Type          = $Storage->{Type};
+
+        my %StorageErrorMessages;
+
+        # Check dynamic field.
+        if ( !defined $DynamicField || !length $DynamicField ) {
+            $StorageErrorMessages{DynamicField} = Translatable('This field is required.');
+        }
+        elsif ( $UsedDynamicFields{$DynamicField} ) {
+            $StorageErrorMessages{DynamicField} = Translatable('Dynamic field is configured more than once.');
+        }
+        else {
+            my $DynamicFieldConfig = $DynamicFieldObject->DynamicFieldGet(
+                Name => $DynamicField,
+            );
+            if ( !IsHashRefWithData($DynamicFieldConfig) ) {
+                $StorageErrorMessages{DynamicField} = Translatable('Dynamic field does not exist or is invalid.');
+            }
+            elsif ( $DynamicFieldConfig->{ObjectType} ne 'Ticket' ) {
+                $StorageErrorMessages{DynamicField} = Translatable('Only dynamic fields for tickets are allowed.');
+            }
+        }
+
+        if ( defined $DynamicField && length $DynamicField ) {
+            $UsedDynamicFields{$DynamicField} = 1;
+        }
+
+        # Check config item key.
+        if ( !defined $ConfigItemKey || !length $ConfigItemKey ) {
+            $StorageErrorMessages{ConfigItemKey} = Translatable('This field is required.');
+        }
+
+        # Important: push even if %StorageErrorMessages is empty
+        # because the index in @StorageErrorMessages must match the one of @AdditionalDFStorage.
+        push @StorageErrorMessages, \%StorageErrorMessages;
+
+        $StorageErrorFound = 1 if %StorageErrorMessages;
+    }
+
+    my %Errors;
+    if ($StorageErrorFound) {
+        $Errors{AdditionalDFStorageErrors} = \@StorageErrorMessages;
+    }
+
+    return %Errors;
 }
 
 1;

@@ -6,7 +6,7 @@
     <ChangeLog Version="6.0.2" Date="2019-06-24 14:08:14 +0200">Dynamic fields of type 'config item' now can be configured to only show config items in certain deployment states. Added config item link type and direction to dynamic field config.</ChangeLog>
     <ChangeLog Version="6.0.1" Date="2019-03-05 16:34:20 +0100">Ported to OTRS6</ChangeLog>
     <Framework>6.0.x</Framework>
-    <PackageRequired Version="6.0.38">Znuny4OTRS-Repo</PackageRequired>
+    <PackageRequired Version="6.0.61">Znuny4OTRS-Repo</PackageRequired>
     <PackageRequired Version="6.0.11">GeneralCatalog</PackageRequired>
     <PackageRequired Version="6.0.11">ITSMCore</PackageRequired>
     <PackageRequired Version="6.0.11">ITSMConfigurationManagement</PackageRequired>
@@ -19,13 +19,20 @@
         <File Permission="660" Location="Kernel/Config/Files/XML/Znuny4OTRSDynamicFieldConfigItem.xml"/>
         <File Permission="660" Location="Kernel/Language/de_Znuny4OTRSDynamicFieldConfigItem.pm"/>
         <File Permission="660" Location="Kernel/Modules/AdminDynamicFieldConfigItem.pm"/>
+        <File Permission="660" Location="Kernel/Modules/Znuny4OTRSDynamicFieldConfigItemAJAX.pm"/>
         <File Permission="660" Location="Kernel/Output/HTML/Templates/Standard/AdminDynamicFieldConfigItem.tt"/>
+        <File Permission="660" Location="Kernel/Output/HTML/Templates/Standard/AdminDynamicFieldConfigItem/Config.tt"/>
         <File Permission="660" Location="Kernel/System/DynamicField/Driver/ConfigItem.pm"/>
         <File Permission="660" Location="Kernel/System/DynamicField/Driver/ConfigItemDropdown.pm"/>
         <File Permission="660" Location="Kernel/System/DynamicField/Driver/ConfigItemMultiselect.pm"/>
-        <File Permission="660" Location="Kernel/System/Ticket/Event/Znuny4OTRSDynamicFieldConfigItem.pm"/>
-        <File Permission="660" Location="scripts/test/Znuny4OTRSDynamicFieldConfigItem/System/Ticket/Event/Znuny4OTRSDynamicFieldConfigItem.t"/>
+        <File Permission="660" Location="Kernel/System/Ticket/Event/Znuny4OTRSDynamicFieldConfigItemAdditionalDFStorage.pm"/>
+        <File Permission="660" Location="Kernel/System/Ticket/Event/Znuny4OTRSDynamicFieldConfigItemTicketLink.pm"/>
+        <File Permission="660" Location="Kernel/System/Znuny4OTRSDynamicFieldConfigItem.pm"/>
+        <File Permission="660" Location="scripts/test/Znuny4OTRSDynamicFieldConfigItem/System/Ticket/Event/Znuny4OTRSDynamicFieldConfigItemAdditionalDFStorage.t"/>
+        <File Permission="660" Location="scripts/test/Znuny4OTRSDynamicFieldConfigItem/System/Ticket/Event/Znuny4OTRSDynamicFieldConfigItemTicketLink.t"/>
+        <File Permission="660" Location="scripts/test/Znuny4OTRSDynamicFieldConfigItem/System/Znuny4OTRSDynamicFieldConfigItem.t"/>
         <File Permission="660" Location="var/httpd/htdocs/js/Core.Agent.Admin.Znuny4OTRSDynamicFieldConfigItem.js"/>
+        <File Permission="660" Location="var/httpd/htdocs/js/Core.Znuny4OTRSDynamicFieldConfigItem.js"/>
         <File Permission="660" Location="var/packagesetup/Znuny4OTRSDynamicFieldConfigItem.pm"/>
     </Filelist>
     <CodeUninstall Type="pre"><![CDATA[

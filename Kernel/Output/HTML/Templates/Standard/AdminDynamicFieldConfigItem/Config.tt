@@ -1,0 +1,109 @@
+# --
+# Copyright (C) 2012-2020 Znuny GmbH, http://znuny.com/
+# --
+# This software comes with ABSOLUTELY NO WARRANTY. For details, see
+# the enclosed file COPYING for license information (AGPL). If you
+# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# --
+
+<label class="Mandatory" for="ConfigItemClass"><span class="Marker">*</span> [% Translate("Config item class") | html %]:</label>
+<div class="Field">
+    [% Data.ConfigItemClassStrg %]
+    <div id="ConfigItemClassError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+    <div id="ConfigItemClassServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+</div>
+<div class="Clear"></div>
+
+<div class="SpacingTop"></div>
+<label for="DeplStateIDs">[% Translate("Config item deployment states") | html %]:</label>
+<div class="Field">
+    [% Data.DeplStateSelectionHTML %]
+</div>
+<div class="Clear"></div>
+
+<div class="SpacingTop"></div>
+<label for="ConfigItemLinkType">[% Translate("Config item link type") | html %]:</label>
+<div class="Field">
+    [% Data.ConfigItemLinkTypeSelectionHTML %]
+    <p class="FieldExplanation">[% Translate("Select a link type to enable linking between the ticket and the selected config items. Note that linking is only availabe for dynamic fields of tickets.") | html %]</p>
+</div>
+<div class="Clear"></div>
+
+<div class="SpacingTop"></div>
+<label for="ConfigItemLinkSource">[% Translate("Config item link source") | html %]:</label>
+<div class="Field">
+    [% Data.ConfigItemLinkSourceSelectionHTML %]
+</div>
+<div class="Clear"></div>
+
+<div class="SpacingTop"></div>
+<label for="ConfigItemLinkRemoval">[% Translate("Config item link removal") | html %]:</label>
+<div class="Field">
+    [% Data.ConfigItemLinkRemovalSelectionHTML %]
+    <p class="FieldExplanation">[% Translate("Activate this option to remove links between the ticket and config items removed from this field.") | html %]</p>
+</div>
+<div class="Clear"></div>
+
+[% RenderBlockStart("AdditionalDFStorage") %]
+<label>[% Translate("Additional dynamic field storage") | html %]:</label>
+<div class="Field ValueInsert AdditionalDFStorageRow" data-formelement-restore-destination='AdditionalDFStorage'  data-formelement-add-destination="AdditionalDFStorage">
+[% RenderBlockStart("AdditionalDFStorageValueCounter") %]
+    <input type="hidden" name="AdditionalDFStorageValueCounter" data-formelement-add-counter="AdditionalDFStorageCounter" value="[% Data.AdditionalDFStorageValueCounter | html %]" id="AdditionalDFStorageValueCounter" class="ValueCounter" />
+[% RenderBlockEnd("AdditionalDFStorageValueCounter") %]
+[% RenderBlockStart("AdditionalDFStorageRow") %]
+    <div class="ValueRow" data-formelement-remove-destination="AdditionalDFStorageRow_[% Data.AdditionalDFStorageValueCounter | html %]" >
+
+        <label class="Mandatory" for="DynamicField_[% Data.AdditionalDFStorageValueCounter | html %]"><span class="Marker">*</span>[% Translate("Dynamic field") | html %]:</label>
+        [% Data.DynamicFieldSelection %]
+        <div id="DynamicField_[% Data.AdditionalDFStorageValueCounter | html %]Error" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+        <div id="DynamicField_[% Data.AdditionalDFStorageValueCounter | html %]ServerError" class="TooltipErrorMessage"><p>[% Translate(Data.DynamicFieldErrorMessage) | html %]</p></div>
+
+        <label class="Mandatory" for="ConfigItemKey_[% Data.AdditionalDFStorageValueCounter | html %]"><span class="Marker">*</span>[% Translate("Config item key") | html %]:</label>
+        <input name="ConfigItemKey_[% Data.AdditionalDFStorageValueCounter | html %]" id="ConfigItemKey_[% Data.AdditionalDFStorageValueCounter | html %]" class="DefaultValueItem Validate_Required DataTable VariableWidth [% Data.ConfigItemKeyError | html %]" type="text" maxlength="100" value="[% Data.ConfigItemKey | html %]"/>
+        <div id="ConfigItemKey_[% Data.AdditionalDFStorageValueCounter | html %]Error" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+        <div id="ConfigItemKey_[% Data.AdditionalDFStorageValueCounter | html %]ServerError" class="TooltipErrorMessage"><p>[% Translate(Data.ConfigItemKeyErrorMessage) | html %]</p></div>
+
+        [% Data.TypeOption %]
+
+        <a href="#" id="RemoveValue_[% Data.AdditionalDFStorageValueCounter | html %]" class="RemoveButton ValueRemove" data-formelement-remove='AdditionalDFStorage'  data-formelement-remove-destination-name="AdditionalDFStorageRow_[% Data.AdditionalDFStorageValueCounter | html %]"><i class="fa fa-minus-square-o"></i><span class="InvisibleText">[% Translate("Remove value") | html %]</span></a>
+        <div class="SpacingTopMini" ></div>
+    </div>
+[% RenderBlockEnd("AdditionalDFStorageRow") %]
+[% RenderBlockStart("AdditionalDFStorageTemplate") %]
+    <div class="ValueTemplate Hidden" data-formelement-add-source="AdditionalDFStorageTemplate">
+
+        <label class="Mandatory" for="DynamicField"><span class="Marker">*</span>[% Translate("Dynamic field") | html %]:</label>
+        [% Data.DynamicFieldSelectionTemplate %]
+        <div id="DynamicFieldError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+        <div id="DynamicFieldServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+
+        <label class="Mandatory" for="ConfigItemKey"><span class="Marker">*</span>[% Translate("Config item key") | html %]:</label>
+        <input name="ConfigItemKey" id="ConfigItemKey" class="DefaultValueItem DataTable VariableWidth" type="text" maxlength="100" value=""/>
+        <div id="ConfigItemKeyError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+        <div id="ConfigItemKeyServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+
+        [% Data.TypeOption %]
+
+        <a href="#" id="RemoveValue" class="RemoveButton ValueRemove" data-formelement-remove='AdditionalDFStorage' data-formelement-remove-destination-name="AdditionalDFStorageRow"><i class="fa fa-minus-square-o"></i><span class="InvisibleText">[% Translate("Remove value") | html %]</span></a>
+        <div class="SpacingTopMini" ></div>
+    </div>
+[% RenderBlockEnd("AdditionalDFStorageTemplate") %]
+</div>
+<div class="Clear"></div>
+
+<label for="AddValue">[% Translate("Add dynamic field") | html %]:</label>
+<div class="Field">
+    <a href="#" class="AddValue" id="AddValue" class="AddButton"
+        data-formelement-add='AdditionalDFStorage'
+        data-formelement-add-destination-name="AdditionalDFStorage"
+        data-formelement-add-source-name="AdditionalDFStorageTemplate"
+        data-formelement-add-counter-name="AdditionalDFStorageCounter"
+        data-formelement-add-method='append'><i class="fa fa-plus-square-o"></i><span class="InvisibleText">[% Translate("Add Value") | html %]</span></a>
+    <a href="#" id="Restore" class="Restore"
+    data-formelement-restore
+    data-formelement-restore-destination-name='AdditionalDFStorage'
+    ><i class="fa fa-undo"></i><span class="InvisibleText">[% Translate("Restore values") | html %]</span></a>
+    <p class="FieldExplanation">[% Translate("These dynamic fields will be filled with values of the same selected config item(s).") | html %]</p>
+</div>
+<div class="Clear SpacingBottom"></div>
+[% RenderBlockEnd("AdditionalDFStorage") %]
