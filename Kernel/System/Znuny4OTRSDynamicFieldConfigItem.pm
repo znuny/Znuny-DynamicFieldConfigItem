@@ -189,8 +189,6 @@ sub StoreDynamicFieldValues {
 
     DYNAMICFIELDNAME:
     for my $DynamicFieldName ( sort keys %{$AdditionalDFStorageData} ) {
-        next DYNAMICFIELDNAME if !exists $Param{AdditionalDFStorageData}->{$DynamicFieldName};
-
         my $DynamicFieldConfig = $DynamicFieldObject->DynamicFieldGet(
             Name => $DynamicFieldName,
         );
@@ -422,19 +420,20 @@ sub _GetAdditionalDFStorageData {
             }
         }
 
-        next ADDITIONALDFSTORAGECONFIG if !@ConfigItemFieldRawValues;
+        my $DynamicFieldValue;
+        if (@ConfigItemFieldRawValues) {
 
-        # Make raw values unique
-        my %ConfigItemFieldRawValues = map { $_ => 1 } @ConfigItemFieldRawValues;
-        @ConfigItemFieldRawValues = sort keys %ConfigItemFieldRawValues;
+            # Make raw values unique
+            my %ConfigItemFieldRawValues = map { $_ => 1 } @ConfigItemFieldRawValues;
+            @ConfigItemFieldRawValues = sort keys %ConfigItemFieldRawValues;
 
-        my $DynamicFieldValue = $Self->_ConvertConfigItemFieldRawValuesToDynamicFieldValue(
-            DynamicFieldType         => $DynamicFieldConfig->{FieldType},
-            ConfigItemFieldRawValues => \@ConfigItemFieldRawValues,
-        );
+            $DynamicFieldValue = $Self->_ConvertConfigItemFieldRawValuesToDynamicFieldValue(
+                DynamicFieldType         => $DynamicFieldConfig->{FieldType},
+                ConfigItemFieldRawValues => \@ConfigItemFieldRawValues,
+            );
+        }
 
-        next ADDITIONALDFSTORAGECONFIG if !defined $DynamicFieldValue;
-
+        # Value can be undefined, which signals that the field should be set empty.
         $DynamicFieldValues{ $AdditionalDFStorageConfig->{DynamicField} } = $DynamicFieldValue;
     }
 
