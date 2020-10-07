@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <otrs_package version="1.0">
     <Name>Znuny4OTRS-DynamicFieldConfigItem</Name>
-    <Version>6.0.5</Version>
+    <Version>6.0.6</Version>
+    <ChangeLog Version="6.0.6" Date="2020-10-07 16:04:11 +0200">Fixed issue #8: Configured additional dynamic fields will now be set empty if config item does not contain data for them (follow-up fix).</ChangeLog>
     <ChangeLog Version="6.0.5" Date="2020-09-09 15:39:10 +0200">Fixed issue #8: Configured additional dynamic fields will now be set empty if config item does not contain data for them.</ChangeLog>
     <ChangeLog Version="6.0.5" Date="2020-09-09 15:08:11 +0200">Fixed issue #8: Configured additional dynamic fields will now be set empty if config item does not contain data for them.</ChangeLog>
     <ChangeLog Version="6.0.4" Date="2020-07-10 10:32:06 +0200">Added support for setting additional dynamic fields.</ChangeLog>
