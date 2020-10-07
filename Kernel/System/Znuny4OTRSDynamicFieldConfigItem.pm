@@ -189,6 +189,8 @@ sub StoreDynamicFieldValues {
 
     DYNAMICFIELDNAME:
     for my $DynamicFieldName ( sort keys %{$AdditionalDFStorageData} ) {
+        next DYNAMICFIELDNAME if !exists $Param{AdditionalDFStorageData}->{$DynamicFieldName};
+
         my $DynamicFieldConfig = $DynamicFieldObject->DynamicFieldGet(
             Name => $DynamicFieldName,
         );
@@ -335,6 +337,11 @@ sub _GetAdditionalDFStorageData {
         # Only ticket dynamic fields are supported
         next ADDITIONALDFSTORAGECONFIG if $DynamicFieldConfig->{ObjectType} ne 'Ticket';
 
+        # Initialize every configured additional DF storage field with undef
+        # so that fields which are empty in the selected config item(s) will be cleared
+        # and no data will be left from previously selected config item(s).
+        $DynamicFieldValues{ $AdditionalDFStorageConfig->{DynamicField} } = undef;
+
         my @ConfigItemFieldRawValues;
 
         CONFIGITEMDATA:
@@ -431,10 +438,9 @@ sub _GetAdditionalDFStorageData {
                 DynamicFieldType         => $DynamicFieldConfig->{FieldType},
                 ConfigItemFieldRawValues => \@ConfigItemFieldRawValues,
             );
-        }
 
-        # Value can be undefined, which signals that the field should be set empty.
-        $DynamicFieldValues{ $AdditionalDFStorageConfig->{DynamicField} } = $DynamicFieldValue;
+            $DynamicFieldValues{ $AdditionalDFStorageConfig->{DynamicField} } = $DynamicFieldValue;
+        }
     }
 
     return \%DynamicFieldValues;
@@ -500,7 +506,7 @@ sub _ConvertConfigItemFieldRawValuesToDynamicFieldValue {
             'Kernel::System::DateTime',
             ObjectParams => {
                 String => $ConfigItemFieldRawValue,
-                }
+            }
         );
         return if !$DateTimeObject;
 
