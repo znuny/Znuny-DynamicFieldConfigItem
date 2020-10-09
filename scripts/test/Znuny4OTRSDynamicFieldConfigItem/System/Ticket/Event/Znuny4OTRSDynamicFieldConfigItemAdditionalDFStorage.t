@@ -534,7 +534,7 @@ for my $DynamicFieldName ( sort keys %ExpectedDynamicFieldData ) {
     $Self->IsDeeply(
         $Ticket{ 'DynamicField_' . $DynamicFieldName },
         $ExpectedValue,
-        "Content of dynamic field $DynamicFieldName must match expected one.",
+        "ConfigItemDropdown - Content of dynamic field $DynamicFieldName must match expected one.",
     );
 }
 
@@ -558,7 +558,7 @@ $DynamicFieldBackendObject->ValueSet(
 
 # # Only additional dynamic fields set to type "backend" are expected to be set by the event.
 %ExpectedDynamicFieldData = (
-    Znuny4OTRSDynamicFieldConfigItemUnitTestText1 => 'CPU 1, CPU 2, CPU 4',
+    Znuny4OTRSDynamicFieldConfigItemUnitTestText1 => 'CPU 1, CPU 2, CPU 1, CPU 4',
     Znuny4OTRSDynamicFieldConfigItemUnitTestText2 => 'CPU 2, CPU 4',
     Znuny4OTRSDynamicFieldConfigItemUnitTestText3 => 'Unit test computer 1, Unit test computer 2',
     Znuny4OTRSDynamicFieldConfigItemUnitTestText4 => '127.0.0.1, 127.0.0.2',
@@ -574,6 +574,7 @@ $DynamicFieldBackendObject->ValueSet(
     Znuny4OTRSDynamicFieldConfigItemUnitTestMultiselect2 => [
         'CPU 1',
         'CPU 2',
+        'CPU 1',
         'CPU 4',
     ],
 );
@@ -594,7 +595,7 @@ for my $DynamicFieldName ( sort keys %ExpectedDynamicFieldData ) {
     $Self->IsDeeply(
         $Ticket{ 'DynamicField_' . $DynamicFieldName },
         $ExpectedValue,
-        "Content of dynamic field $DynamicFieldName must match expected one.",
+        "ConfigItemMultiselect - Content of dynamic field $DynamicFieldName must match expected one.",
     );
 }
 

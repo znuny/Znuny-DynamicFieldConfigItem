@@ -35,7 +35,7 @@ sub new {
     bless( $Self, $Type );
 
     $Self->{ObjectTypeConfig} = $ConfigObject->Get('DynamicFields::ObjectType');
-    $Self->{FieldTypeConfig} = $ConfigObject->Get('DynamicFields::Driver') || {};
+    $Self->{FieldTypeConfig}  = $ConfigObject->Get('DynamicFields::Driver') || {};
 
     return $Self;
 }
@@ -137,7 +137,7 @@ sub _AddAction {
             $DynamicFieldObject->DynamicFieldList(
                 Valid      => 0,
                 ResultType => 'HASH',
-                )
+            )
         };
         %DynamicFieldsList = reverse %DynamicFieldsList;
 
@@ -341,7 +341,7 @@ sub _ChangeAction {
             $DynamicFieldObject->DynamicFieldList(
                 Valid      => 0,
                 ResultType => 'HASH',
-                )
+            )
         };
         %DynamicFieldsList = reverse %DynamicFieldsList;
 

@@ -512,7 +512,7 @@ my %ExpectedDynamicFieldData = (
 $Self->IsDeeply(
     $DynamicFieldData,
     \%ExpectedDynamicFieldData,
-    'GetAdditionalDFStorageData() must return expected dynamic field data.',
+    'ConfigItemDropdown - GetAdditionalDFStorageData() must return expected dynamic field data.',
 );
 
 # Store dynamic field values in ticket.
@@ -548,7 +548,7 @@ for my $DynamicFieldName ( sort keys %ExpectedDynamicFieldData ) {
     $Self->IsDeeply(
         $Ticket{ 'DynamicField_' . $DynamicFieldName },
         $ExpectedValue,
-        "Content of dynamic field $DynamicFieldName must match expected one.",
+        "ConfigItemDropdown - Content of dynamic field $DynamicFieldName must match expected one.",
     );
 }
 
@@ -561,7 +561,7 @@ $DynamicFieldData = $Znuny4OTRSDynamicFieldConfigItemObject->GetAdditionalDFStor
 );
 
 %ExpectedDynamicFieldData = (
-    Znuny4OTRSDynamicFieldConfigItemUnitTestText1        => 'CPU 1, CPU 2, CPU 4',
+    Znuny4OTRSDynamicFieldConfigItemUnitTestText1        => 'CPU 1, CPU 2, CPU 1, CPU 4',
     Znuny4OTRSDynamicFieldConfigItemUnitTestText2        => 'CPU 2, CPU 4',
     Znuny4OTRSDynamicFieldConfigItemUnitTestText3        => 'Unit test computer 1, Unit test computer 2',
     Znuny4OTRSDynamicFieldConfigItemUnitTestText4        => '127.0.0.1, 127.0.0.2',
@@ -576,6 +576,7 @@ $DynamicFieldData = $Znuny4OTRSDynamicFieldConfigItemObject->GetAdditionalDFStor
     Znuny4OTRSDynamicFieldConfigItemUnitTestMultiselect2 => [
         'CPU 1',
         'CPU 2',
+        'CPU 1',
         'CPU 4',
     ],
 );
@@ -583,7 +584,7 @@ $DynamicFieldData = $Znuny4OTRSDynamicFieldConfigItemObject->GetAdditionalDFStor
 $Self->IsDeeply(
     $DynamicFieldData,
     \%ExpectedDynamicFieldData,
-    'GetAdditionalDFStorageData() must return expected dynamic field data.',
+    'ConfigItemMultiselect - GetAdditionalDFStorageData() must return expected dynamic field data.',
 );
 
 # Store dynamic field values in ticket.
@@ -619,7 +620,7 @@ for my $DynamicFieldName ( sort keys %ExpectedDynamicFieldData ) {
     $Self->IsDeeply(
         $Ticket{ 'DynamicField_' . $DynamicFieldName },
         $ExpectedValue,
-        "Content of dynamic field $DynamicFieldName must match expected one.",
+        "ConfigItemMultiselect - Content of dynamic field $DynamicFieldName must match expected one.",
     );
 }
 
@@ -627,17 +628,38 @@ for my $DynamicFieldName ( sort keys %ExpectedDynamicFieldData ) {
 $DynamicFieldData = $Znuny4OTRSDynamicFieldConfigItemObject->GetAdditionalDFStorageData(
     SourceDynamicFieldName => 'Znuny4OTRSDynamicFieldConfigItemUnitTestConfigItem2',
 
-    # changed order of config items must not have an effect because values for dynamic fields
+    # changed order of config items must  have an effect because values for dynamic fields
     # will be sorted.
     SelectedConfigItemIDs => [ $ConfigItem2ID, $ConfigItem1ID, ],
     StorageType           => 'Backend',
     UserID                => $UserID,
 );
 
+%ExpectedDynamicFieldData = (
+    Znuny4OTRSDynamicFieldConfigItemUnitTestText1        => 'CPU 1, CPU 4, CPU 1, CPU 2',
+    Znuny4OTRSDynamicFieldConfigItemUnitTestText2        => 'CPU 4, CPU 2',
+    Znuny4OTRSDynamicFieldConfigItemUnitTestText3        => 'Unit test computer 2, Unit test computer 1',
+    Znuny4OTRSDynamicFieldConfigItemUnitTestText4        => '127.0.0.2, 127.0.0.1',
+    Znuny4OTRSDynamicFieldConfigItemUnitTestDate         => '2041-01-01',
+    Znuny4OTRSDynamicFieldConfigItemUnitTestDateTime     => '2041-01-01 00:00:00',
+    Znuny4OTRSDynamicFieldConfigItemUnitTestDropdown1    => 'CPU 1',
+    Znuny4OTRSDynamicFieldConfigItemUnitTestDropdown2    => 'CPU 1',
+    Znuny4OTRSDynamicFieldConfigItemUnitTestMultiselect1 => [
+        'CPU 4',
+        'CPU 2',
+    ],
+    Znuny4OTRSDynamicFieldConfigItemUnitTestMultiselect2 => [
+        'CPU 1',
+        'CPU 4',
+        'CPU 1',
+        'CPU 2',
+    ],
+);
+
 $Self->IsDeeply(
     $DynamicFieldData,
     \%ExpectedDynamicFieldData,
-    'GetAdditionalDFStorageData() must return expected dynamic field data.',
+    'ConfigItemMultiselect - GetAdditionalDFStorageData() must return expected dynamic field data.',
 );
 
 # Store dynamic field values in ticket.
@@ -673,7 +695,7 @@ for my $DynamicFieldName ( sort keys %ExpectedDynamicFieldData ) {
     $Self->IsDeeply(
         $Ticket{ 'DynamicField_' . $DynamicFieldName },
         $ExpectedValue,
-        "Content of dynamic field $DynamicFieldName must match expected one.",
+        "ConfigItemMultiselect - Content of dynamic field $DynamicFieldName must match expected one.",
     );
 }
 

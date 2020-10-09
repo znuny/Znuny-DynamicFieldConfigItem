@@ -105,13 +105,13 @@ sub GetAdditionalDFStorageData {
 
     # Evaluate selected config item IDs.
     return if !IsArrayRefWithData( $Param{SelectedConfigItemIDs} );
-    my %SelectedConfigItemIDs = map { $_ => 1 }
+    my @SelectedConfigItemIDs =
         grep {
         defined $_
             && $_ =~ m{\A[1-9]\d*\z}
         }
         @{ $Param{SelectedConfigItemIDs} };
-    my @SelectedConfigItemIDs = keys %SelectedConfigItemIDs;
+
     return if !@SelectedConfigItemIDs;
 
     # Evaluate additional dynamic field storage configs.
@@ -429,10 +429,6 @@ sub _GetAdditionalDFStorageData {
 
         my $DynamicFieldValue;
         if (@ConfigItemFieldRawValues) {
-
-            # Make raw values unique
-            my %ConfigItemFieldRawValues = map { $_ => 1 } @ConfigItemFieldRawValues;
-            @ConfigItemFieldRawValues = sort keys %ConfigItemFieldRawValues;
 
             $DynamicFieldValue = $Self->_ConvertConfigItemFieldRawValuesToDynamicFieldValue(
                 DynamicFieldType         => $DynamicFieldConfig->{FieldType},
