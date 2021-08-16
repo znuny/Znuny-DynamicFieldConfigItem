@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2012-2020 Znuny GmbH, http://znuny.com/
+# Copyright (C) 2012-2021 Znuny GmbH, http://znuny.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -50,9 +50,11 @@ sub Data {
     $Self->{Translation}->{'Dynamic field does not exist or is invalid.'}                                            = 'Dynamisches Feld existiert nicht oder ist ungültig.';
     $Self->{Translation}->{'Only dynamic fields for tickets are allowed.'}                                           = 'Nur dynamische Ticketfelder sind erlaubt.';
 
+    $Self->{Translation}->{'The selected config item class is invalid or does not exist.'}
+        = 'Die gewählte Config-Item-Klasse ist ungültig oder existiert nicht.';
+
     $Self->{Translation}->{'These dynamic fields will be filled with values of the same selected config item(s).'}
         = 'Diese dynamischen Felder werden mit den Werten aus dem/den gewählten Config-Item(s) befüllt.';
-
 
     $Self->{Translation}->{'Select a link type to enable linking between the ticket and the selected config items. Note that linking is only availabe for dynamic fields of tickets.'}
         = 'Wählen Sie einen Linktyp, um die Verknüpfung zwischen Ticket und gewählten Config-Items zu aktivieren. Beachten Sie, dass die Verknüpfung nur für dynamische Felder von Tickets zur Verfügung steht.';

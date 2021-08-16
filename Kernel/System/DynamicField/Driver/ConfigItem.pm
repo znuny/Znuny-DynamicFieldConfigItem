@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2012-2020 Znuny GmbH, http://znuny.com/
+# Copyright (C) 2012-2021 Znuny GmbH, http://znuny.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -223,25 +223,41 @@ sub PossibleValuesGet {
     my $ConfigItemObject     = $Kernel::OM->Get('Kernel::System::ITSMConfigItem');
     my $GeneralCatalogObject = $Kernel::OM->Get('Kernel::System::GeneralCatalog');
 
+    # Add empty value, none of the config item fields can have a default or pre-selected value
+    # because the selectable values may change depending on deployment state.
+    my %PossibleValues = (
+        '' => '-',
+    );
+
     my $Class = $Param{DynamicFieldConfig}->{Config}->{ConfigItemClass};
-    return if !$Class;
+    return \%PossibleValues if !$Class;
 
     # check all CI classes
     my $HashRef = $GeneralCatalogObject->ItemList(
         Class => 'ITSM::ConfigItem::Class',
     );
     my %Classes = reverse %{ $HashRef || {} };
-    return if !$Classes{$Class};
+    return \%PossibleValues if !$Classes{$Class};
 
     my $ConfigItemListRef = [];
 
     # limit selectable config items to those which have one of the configured
     # deployment states
-    my $DeplStateIDs = $Param{DynamicFieldConfig}->{Config}->{DeplStateIDs} // [];
-    if ( IsArrayRefWithData($DeplStateIDs) ) {
+    my $DeplStates = $Param{DynamicFieldConfig}->{Config}->{DeplStates} // [];
+    if ( IsArrayRefWithData($DeplStates) ) {
+        my $DeplStateNameByID = $GeneralCatalogObject->ItemList(
+            Class => 'ITSM::ConfigItem::DeploymentState',
+        );
+        my %DeplStateIDByName = reverse %{$DeplStateNameByID};
+
+        my %DeplStates   = map  { $_ => 1 } @{$DeplStates};
+        my @DeplStateIDs = grep { defined $_ }
+            map { $DeplStateIDByName{$_} }
+            keys %DeplStates;
+
         my $ConfigItemIDs = $ConfigItemObject->ConfigItemSearch(
             ClassIDs     => [ $Classes{$Class}, ],
-            DeplStateIDs => $DeplStateIDs,
+            DeplStateIDs => \@DeplStateIDs,
         );
 
         for my $ConfigItemID ( @{$ConfigItemIDs} ) {
@@ -262,15 +278,10 @@ sub PossibleValuesGet {
         );
     }
 
-    my %PossibleValues;
     CONFIGITEM:
     for my $ConfigItem ( @{ $ConfigItemListRef || {} } ) {
         $PossibleValues{ $ConfigItem->{ConfigItemID} } = $ConfigItem->{Name};
     }
-
-    # Add empty value, none of the config item fields can have a default or pre-selected value
-    # because the selectable values may change depending on deployment state.
-    $PossibleValues{''} = '-';
 
     return \%PossibleValues;
 }

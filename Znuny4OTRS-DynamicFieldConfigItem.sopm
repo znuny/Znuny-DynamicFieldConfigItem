@@ -52,6 +52,9 @@
     <CodeUpgrade Type="post" Version="6.0.2"><![CDATA[
         $Kernel::OM->Get('var::packagesetup::Znuny4OTRSDynamicFieldConfigItem')->CodeUpgradeFromLowerThan602();
     ]]></CodeUpgrade>
+    <CodeUpgrade Type="post" Version="6.0.8"><![CDATA[
+        $Kernel::OM->Get('var::packagesetup::Znuny4OTRSDynamicFieldConfigItem')->CodeUpgradeFromLowerThan608();
+    ]]></CodeUpgrade>
     <CodeReinstall Type="post"><![CDATA[
         $Kernel::OM->Get('var::packagesetup::Znuny4OTRSDynamicFieldConfigItem')->CodeReinstall();
     ]]></CodeReinstall>

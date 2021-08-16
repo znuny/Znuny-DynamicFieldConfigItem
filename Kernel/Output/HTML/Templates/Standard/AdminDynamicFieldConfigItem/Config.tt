@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2012-2020 Znuny GmbH, http://znuny.com/
+# Copyright (C) 2012-2021 Znuny GmbH, http://znuny.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -9,6 +9,9 @@
 <label class="Mandatory" for="ConfigItemClass"><span class="Marker">*</span> [% Translate("Config item class") | html %]:</label>
 <div class="Field">
     [% Data.ConfigItemClassStrg %]
+    [% IF Data.SelectedConfigItemClassIsInvalid %]
+        <p class="FieldExplanation">[% Translate("The selected config item class is invalid or does not exist.") | html %]</p>
+    [% END %]
     <div id="ConfigItemClassError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
     <div id="ConfigItemClassServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
 </div>

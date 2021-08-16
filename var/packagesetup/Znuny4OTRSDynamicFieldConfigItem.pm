@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2012-2020 Znuny GmbH, http://znuny.com/
+# Copyright (C) 2012-2021 Znuny GmbH, http://znuny.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -16,6 +16,7 @@ use utf8;
 our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::DynamicField',
+    'Kernel::System::GeneralCatalog',
     'Kernel::System::Log',
     'Kernel::System::ZnunyHelper',
 );
@@ -161,6 +162,71 @@ sub CodeUpgradeFromLowerThan602 {
         $LogObject->Log(
             Priority => 'error',
             Message  => "Dynamic field '$DynamicField->{Name}' (ID $DynamicField->{ID}) could not be updated.",
+        );
+    }
+
+    return 1;
+}
+
+=head2 CodeUpgradeFromLowerThan608()
+
+run the code upgrade part for package versions lower than 6.0.8
+
+    my $Result = $CodeObject->CodeUpgradeFromLowerThan608();
+
+=cut
+
+sub CodeUpgradeFromLowerThan608 {
+    my ( $Self, %Param ) = @_;
+
+    my $ConfigObject         = $Kernel::OM->Get('Kernel::Config');
+    my $DynamicFieldObject   = $Kernel::OM->Get('Kernel::System::DynamicField');
+    my $LogObject            = $Kernel::OM->Get('Kernel::System::Log');
+    my $GeneralCatalogObject = $Kernel::OM->Get('Kernel::System::GeneralCatalog');
+
+    my $UserID = 1;
+
+    my $DeplStateNameByID = $GeneralCatalogObject->ItemList(
+        Class => 'ITSM::ConfigItem::DeploymentState',
+    );
+
+    # Fetch all dynamic fields of type ConfigItemDropdown and ConfigItemMultiselect
+    # and object type 'Ticket', because linking is only supported for those.
+    my $DynamicFieldConfigs = $DynamicFieldObject->DynamicFieldListGet();
+    my @DynamicFieldConfigs = grep {
+        $_->{FieldType} =~ m{\AConfigItem(Dropdown|Multiselect)\z}
+    } @{$DynamicFieldConfigs};
+
+    return 1 if !@DynamicFieldConfigs;
+
+    DYNAMICFIELDCONFIG:
+    for my $DynamicFieldConfig (@DynamicFieldConfigs) {
+        next DYNAMICFIELDCONFIG if !exists $DynamicFieldConfig->{Config}->{DeplStateIDs};
+
+        my @DeplStates = grep { defined $_ }
+            map { $DeplStateNameByID->{$_} }
+            @{ $DynamicFieldConfig->{Config}->{DeplStateIDs} // [] };
+
+        delete $DynamicFieldConfig->{Config}->{DeplStateIDs};
+        $DynamicFieldConfig->{Config}->{DeplStates} = \@DeplStates;
+
+        my $DynamicFieldConfigUpdated = $DynamicFieldObject->DynamicFieldUpdate(
+            ID         => $DynamicFieldConfig->{ID},
+            Name       => $DynamicFieldConfig->{Name},
+            Label      => $DynamicFieldConfig->{Label},
+            FieldOrder => $DynamicFieldConfig->{FieldOrder},
+            FieldType  => $DynamicFieldConfig->{FieldType},
+            ObjectType => $DynamicFieldConfig->{ObjectType},
+            Config     => $DynamicFieldConfig->{Config},
+            ValidID    => $DynamicFieldConfig->{ValidID},
+            UserID     => $UserID,
+        );
+        next DYNAMICFIELDCONFIG if $DynamicFieldConfigUpdated;
+
+        $LogObject->Log(
+            Priority => 'error',
+            Message =>
+                "Config of dynamic field '$DynamicFieldConfig->{Name}' (ID $DynamicFieldConfig->{ID}) could not be updated.",
         );
     }
 

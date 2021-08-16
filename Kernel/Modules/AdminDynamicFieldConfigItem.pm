@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2012-2020 Znuny GmbH, http://znuny.com/
+# Copyright (C) 2012-2021 Znuny GmbH, http://znuny.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -163,12 +163,12 @@ sub _AddAction {
         $GetParam{$ConfigParam} = $ParamObject->GetParam( Param => $ConfigParam );
     }
 
-    my @DeplStateIDs = $ParamObject->GetArray(
-        Param => 'DeplStateIDs',
+    my @DeplStates = $ParamObject->GetArray(
+        Param => 'DeplStates',
         Raw   => 1,
     );
-    if (@DeplStateIDs) {
-        $GetParam{DeplStateIDs} = \@DeplStateIDs;
+    if (@DeplStates) {
+        $GetParam{DeplStates} = \@DeplStates;
     }
 
     # uncorrectable errors
@@ -212,7 +212,7 @@ sub _AddAction {
     # overwrite dynamic field config
     KEY:
     for my $Key (
-        qw( ConfigItemClass DeplStateIDs ConfigItemLinkType ConfigItemLinkSource ConfigItemLinkRemoval AdditionalDFStorage )
+        qw( ConfigItemClass DeplStates ConfigItemLinkType ConfigItemLinkSource ConfigItemLinkRemoval AdditionalDFStorage )
         )
     {
         next KEY if !defined $GetParam{$Key};
@@ -385,12 +385,12 @@ sub _ChangeAction {
     # Config item class is read-only in change, so set it to the stored value every time.
     $GetParam{ConfigItemClass} = $DynamicFieldConfig->{Config}->{ConfigItemClass};
 
-    my @DeplStateIDs = $ParamObject->GetArray(
-        Param => 'DeplStateIDs',
+    my @DeplStates = $ParamObject->GetArray(
+        Param => 'DeplStates',
         Raw   => 1,
     );
-    $GetParam{DeplStateIDs} = \@DeplStateIDs;
-    $DynamicFieldConfig->{Config}->{DeplStateIDs} = \@DeplStateIDs;
+    $GetParam{DeplStates} = \@DeplStates;
+    $DynamicFieldConfig->{Config}->{DeplStates} = \@DeplStates;
 
     $DynamicFieldConfig->{Config}->{ConfigItemLinkType}    = $GetParam{ConfigItemLinkType};
     $DynamicFieldConfig->{Config}->{ConfigItemLinkSource}  = $GetParam{ConfigItemLinkSource};
@@ -460,6 +460,7 @@ sub _ShowScreen {
     my $LayoutObject         = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $ValidObject          = $Kernel::OM->Get('Kernel::System::Valid');
     my $LinkObject           = $Kernel::OM->Get('Kernel::System::LinkObject');
+    my $LanguageObject       = $Kernel::OM->Get('Kernel::Language');
 
     $Param{DisplayFieldName} = 'New';
 
@@ -542,18 +543,34 @@ sub _ShowScreen {
         $ReadonlyInternalField = 'readonly="readonly"';
     }
 
-    # get values for classes
-    my $ItemListRef = $GeneralCatalogObject->ItemList(
+    my $ClassList = $GeneralCatalogObject->ItemList(
         Class => 'ITSM::ConfigItem::Class',
     );
 
-    my $ClassList = [ sort values %{ $ItemListRef || {} } ];
+    my $ConfigItemClasses = [ sort values %{ $ClassList || {} } ];
+    my %ConfigItemClasses = map { $_ => $_ } @{$ConfigItemClasses};
+
+    # Add 'invalid' note to config class name if the class is invalid
+    # or does not exist (anymore).
+    my $SelectedConfigItemClassIsInvalid;
+    if (
+        $Param{Mode} eq 'Change'
+        && $Param{ConfigItemClass}
+        && !$ConfigItemClasses{ $Param{ConfigItemClass} }
+        )
+    {
+        $SelectedConfigItemClassIsInvalid = 1;
+        $ConfigItemClasses{ $Param{ConfigItemClass} } = $LanguageObject->Translate( $Param{ConfigItemClass} )
+            . ' ('
+            . $LanguageObject->Translate('invalid')
+            . ')';
+    }
 
     # disable field in change dialogs
     my $Disabled = $Param{Mode} eq 'Change' ? 1 : 0;
 
     $Param{ConfigItemClassStrg} = $LayoutObject->BuildSelection(
-        Data         => $ClassList,
+        Data         => \%ConfigItemClasses,
         SelectedID   => $Param{ConfigItemClass},
         Class        => 'Modernize Validate_Required  ' . ( $Param{ConfigItemClassServerError} || ' ' ),
         Translation  => 1,
@@ -564,17 +581,21 @@ sub _ShowScreen {
     );
 
     # selection of deployment status
-    my $DeplStates = $GeneralCatalogObject->ItemList(
+    my $DeplStateList = $GeneralCatalogObject->ItemList(
         Class => 'ITSM::ConfigItem::DeploymentState',
     );
 
+    my $DeplStates = [ sort values %{ $DeplStateList || {} } ];
+    my %DeplStates = map { $_ => $_ } @{$DeplStates};
+
     my $DeplStateSelectionHTML = $LayoutObject->BuildSelection(
-        Data         => $DeplStates,
-        Name         => 'DeplStateIDs',
+        Data         => \%DeplStates,
+        Name         => 'DeplStates',
         PossibleNone => 0,
+        Translation  => 1,
         Class        => 'Modernize',
         Multiple     => 1,
-        SelectedID   => $Param{DeplStateIDs},
+        SelectedID   => $Param{DeplStates},
     );
 
     # selection of link type
@@ -624,6 +645,7 @@ sub _ShowScreen {
         TemplateFile => 'AdminDynamicFieldConfigItem',
         Data         => {
             %Param,
+            SelectedConfigItemClassIsInvalid   => $SelectedConfigItemClassIsInvalid,
             DeplStateSelectionHTML             => $DeplStateSelectionHTML,
             ConfigItemLinkTypeSelectionHTML    => $ConfigItemLinkTypeSelectionHTML,
             ConfigItemLinkSourceSelectionHTML  => $ConfigItemLinkSourceSelectionHTML,
