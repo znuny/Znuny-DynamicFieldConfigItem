@@ -211,6 +211,16 @@ my @DynamicFields = (
         },
     },
     {
+        Name          => 'Znuny4OTRSDynamicFieldConfigItemUnitTestText6',
+        Label         => 'Znuny4OTRSDynamicFieldConfigItemUnitTestText6',
+        InternalField => 0,
+        ObjectType    => 'Ticket',
+        FieldType     => 'Text',
+        Config        => {
+            DefaultValue => '',
+        },
+    },
+    {
         Name          => 'Znuny4OTRSDynamicFieldConfigItemUnitTestDateTime',
         Label         => 'Znuny4OTRSDynamicFieldConfigItemUnitTestDateTime',
         InternalField => 0,
@@ -366,6 +376,11 @@ my @DynamicFields = (
                     Type => 'Backend',    # Notice that this one is backend only
                 },
                 {
+                    DynamicField  => 'Znuny4OTRSDynamicFieldConfigItemUnitTestText6',
+                    ConfigItemKey => 'NIC::1::IPoverDHCP::1_Value',
+                    Type          => 'FrontendBackend',
+                },
+                {
                     DynamicField  => 'Znuny4OTRSDynamicFieldConfigItemUnitTestDate',
                     ConfigItemKey => 'WarrantyExpirationDate',
                     Type          => 'FrontendBackend',
@@ -438,6 +453,11 @@ my @DynamicFields = (
                     Type => 'Frontend',    # Notice that this one is frontend only
                 },
                 {
+                    DynamicField  => 'Znuny4OTRSDynamicFieldConfigItemUnitTestText6',
+                    ConfigItemKey => 'NIC::1::IPoverDHCP::1_Value',
+                    Type          => 'FrontendBackend',
+                },
+                {
                     DynamicField  => 'Znuny4OTRSDynamicFieldConfigItemUnitTestDate',
                     ConfigItemKey => 'WarrantyExpirationDate',
                     Type          => 'Backend',
@@ -496,6 +516,7 @@ my %ExpectedDynamicFieldData = (
     Znuny4OTRSDynamicFieldConfigItemUnitTestText2        => 'CPU 2',
     Znuny4OTRSDynamicFieldConfigItemUnitTestText3        => 'Unit test computer 1',
     Znuny4OTRSDynamicFieldConfigItemUnitTestText4        => '127.0.0.1',
+    Znuny4OTRSDynamicFieldConfigItemUnitTestText6        => 'Yes',
     Znuny4OTRSDynamicFieldConfigItemUnitTestDate         => '2040-01-01',
     Znuny4OTRSDynamicFieldConfigItemUnitTestDateTime     => '2040-01-01 00:00:00',
     Znuny4OTRSDynamicFieldConfigItemUnitTestDropdown1    => 'CPU 1',
@@ -529,7 +550,7 @@ my @ExpectedStoredDynamicFields = sort keys %ExpectedDynamicFieldData;
 $Self->IsDeeply(
     $StoredDynamicFields,
     \@ExpectedStoredDynamicFields,
-    'Stored dynamic fields must match expected ones.',
+    'ConfigItemDropdown - Stored dynamic fields must match expected ones.',
 );
 
 my %Ticket = $TicketObject->TicketGet(
@@ -565,6 +586,7 @@ $DynamicFieldData = $Znuny4OTRSDynamicFieldConfigItemObject->GetAdditionalDFStor
     Znuny4OTRSDynamicFieldConfigItemUnitTestText2        => 'CPU 2, CPU 4',
     Znuny4OTRSDynamicFieldConfigItemUnitTestText3        => 'Unit test computer 1, Unit test computer 2',
     Znuny4OTRSDynamicFieldConfigItemUnitTestText4        => '127.0.0.1, 127.0.0.2',
+    Znuny4OTRSDynamicFieldConfigItemUnitTestText6        => 'Yes, No',
     Znuny4OTRSDynamicFieldConfigItemUnitTestDate         => '2040-01-01',
     Znuny4OTRSDynamicFieldConfigItemUnitTestDateTime     => '2040-01-01 00:00:00',
     Znuny4OTRSDynamicFieldConfigItemUnitTestDropdown1    => 'CPU 1',
@@ -601,7 +623,7 @@ $StoredDynamicFields = $Znuny4OTRSDynamicFieldConfigItemObject->StoreDynamicFiel
 $Self->IsDeeply(
     $StoredDynamicFields,
     \@ExpectedStoredDynamicFields,
-    'Stored dynamic fields must match expected ones.',
+    'ConfigItemMultiselect - Stored dynamic fields must match expected ones.',
 );
 
 %Ticket = $TicketObject->TicketGet(
@@ -620,7 +642,7 @@ for my $DynamicFieldName ( sort keys %ExpectedDynamicFieldData ) {
     $Self->IsDeeply(
         $Ticket{ 'DynamicField_' . $DynamicFieldName },
         $ExpectedValue,
-        "ConfigItemMultiselect - Content of dynamic field $DynamicFieldName must match expected one.",
+        "ConfigItemMultiselect 1 - Content of dynamic field $DynamicFieldName must match expected one.",
     );
 }
 
@@ -640,6 +662,7 @@ $DynamicFieldData = $Znuny4OTRSDynamicFieldConfigItemObject->GetAdditionalDFStor
     Znuny4OTRSDynamicFieldConfigItemUnitTestText2        => 'CPU 4, CPU 2',
     Znuny4OTRSDynamicFieldConfigItemUnitTestText3        => 'Unit test computer 2, Unit test computer 1',
     Znuny4OTRSDynamicFieldConfigItemUnitTestText4        => '127.0.0.2, 127.0.0.1',
+    Znuny4OTRSDynamicFieldConfigItemUnitTestText6        => 'No, Yes',
     Znuny4OTRSDynamicFieldConfigItemUnitTestDate         => '2041-01-01',
     Znuny4OTRSDynamicFieldConfigItemUnitTestDateTime     => '2041-01-01 00:00:00',
     Znuny4OTRSDynamicFieldConfigItemUnitTestDropdown1    => 'CPU 1',
@@ -695,7 +718,7 @@ for my $DynamicFieldName ( sort keys %ExpectedDynamicFieldData ) {
     $Self->IsDeeply(
         $Ticket{ 'DynamicField_' . $DynamicFieldName },
         $ExpectedValue,
-        "ConfigItemMultiselect - Content of dynamic field $DynamicFieldName must match expected one.",
+        "ConfigItemMultiselect 2 - Content of dynamic field $DynamicFieldName must match expected one.",
     );
 }
 

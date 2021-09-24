@@ -274,6 +274,7 @@ sub _GetConfigItemData {
     for my $Field ( sort keys %{ $Self->{ConfigItemStandardFields} } ) {
         $ConfigItemData{$Field} = $ConfigItemVersion->{$Field};
     }
+    $ConfigItemData{XMLDefinition} = $ConfigItemVersion->{XMLDefinition};
 
     return \%ConfigItemData;
 }
@@ -313,6 +314,7 @@ sub _GetAdditionalDFStorageData {
 
     my $LogObject          = $Kernel::OM->Get('Kernel::System::Log');
     my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
+    my $ConfigItemObject   = $Kernel::OM->Get('Kernel::System::ITSMConfigItem');
 
     NEEDED:
     for my $Needed (qw(ConfigItemData AdditionalDFStorageConfigs)) {
@@ -329,6 +331,7 @@ sub _GetAdditionalDFStorageData {
 
     ADDITIONALDFSTORAGECONFIG:
     for my $AdditionalDFStorageConfig ( @{ $Param{AdditionalDFStorageConfigs} } ) {
+
         my $DynamicFieldConfig = $DynamicFieldObject->DynamicFieldGet(
             Name => $AdditionalDFStorageConfig->{DynamicField},
         );
@@ -344,83 +347,87 @@ sub _GetAdditionalDFStorageData {
 
         my @ConfigItemFieldRawValues;
 
+        my $XMLValueLookup;
+        my $ConfigItemKey = $AdditionalDFStorageConfig->{ConfigItemKey};
+        my $AttributePath;
+
+        # check if _Value postfix is set
+        if ( $ConfigItemKey =~ m{_Value\z} ) {
+            $ConfigItemKey =~ s{_Value\z}{}ms;
+            $AttributePath = $ConfigItemKey;
+            $AttributePath =~ s{::\d+}{}ms;
+            $XMLValueLookup = 1;
+        }
+
         CONFIGITEMDATA:
         for my $ConfigItemData ( @{ $Param{ConfigItemData} } ) {
+            my $StringifiedXMLData = $Self->_XMLData2StringifiedXMLData(
+                XMLData => $ConfigItemData->{XMLData},
+            );
+
             my $ConfigItemFieldRawValue;
+            my $Item;
 
-            my @ConfigItemKeyParts = split '::', $AdditionalDFStorageConfig->{ConfigItemKey};
-
-            CONFIGITEMKEYPART:
-            for my $ConfigItemKeyPart (@ConfigItemKeyParts) {
-
-                #
-                # Config item key part is field index (e.g. 2)
-                #
-                if ( $ConfigItemKeyPart =~ m{\A\d+\z} ) {
-
-                    # Index in config starts at 1 (e.g. CPU::1).
-                    my $Index = $ConfigItemKeyPart - 1;
-
-                    # Referencing an index on a non-array.
-                    # Referencing an invalid index on an array.
-                    if (
-                        !IsArrayRefWithData($ConfigItemFieldRawValue)
-                        || !exists $ConfigItemFieldRawValue->[$Index]
-                        )
-                    {
-                        $ConfigItemFieldRawValue = undef;
-                        next ADDITIONALDFSTORAGECONFIG;
-                    }
-
-                    $ConfigItemFieldRawValue = $ConfigItemFieldRawValue->[$Index];
-
-                    next CONFIGITEMKEYPART;
-                }
-
-                #
-                # Config item key part is field name (e.g. CPU)
-                #
-
-                # Standard config item field
-                if ( $Self->{ConfigItemStandardFields}->{$ConfigItemKeyPart} ) {
-                    $ConfigItemFieldRawValue = $ConfigItemData->{$ConfigItemKeyPart};
-
-                    # Standard field: These are always scalars, so stop after first key part.
-                    # Additional key parts would be wrong and will be ignored.
-                    last CONFIGITEMKEYPART;
-                }
-
-                # Field in XML structure of config item, top level (e.g. NIC)
-                if ( !defined $ConfigItemFieldRawValue ) {
-                    next ADDITIONALDFSTORAGECONFIG
-                        if !exists $ConfigItemData->{XMLData}->{$ConfigItemKeyPart};
-
-                    $ConfigItemFieldRawValue = $ConfigItemData->{XMLData}->{$ConfigItemKeyPart};
-                    next CONFIGITEMKEYPART;
-                }
-
-                # Field in XML structure of config item, sub level (e.g. NIC::1::IPAddress)
-                next ADDITIONALDFSTORAGECONFIG if !IsHashRefWithData($ConfigItemFieldRawValue);
-                next ADDITIONALDFSTORAGECONFIG if !exists $ConfigItemFieldRawValue->{$ConfigItemKeyPart};
-
-                $ConfigItemFieldRawValue = $ConfigItemFieldRawValue->{$ConfigItemKeyPart};
+            if ($XMLValueLookup) {
+                $Item = $ConfigItemObject->DefinitionAttributeInfo(
+                    AttributePath => $AttributePath,                     # 'HardDisk::Capacity',
+                    Definition    => $ConfigItemData->{XMLDefinition},
+                );
             }
 
-            next CONFIGITEMDATA if !defined $ConfigItemFieldRawValue;
+            # standard field
+            if ( $Self->{ConfigItemStandardFields}->{$ConfigItemKey} ) {
+                if ($XMLValueLookup) {
+                    $ConfigItemFieldRawValue = $ConfigItemObject->XMLValueLookup(
+                        Item  => $Item,
+                        Value => $ConfigItemData->{$ConfigItemKey},
+                    );
+                }
+                else {
+                    $ConfigItemFieldRawValue = $ConfigItemData->{$ConfigItemKey};
+                }
+            }
+
+            # directly found stringified data
+            elsif (
+                IsHashRefWithData($StringifiedXMLData)
+                && $StringifiedXMLData->{$ConfigItemKey}
+                )
+            {
+                if ($XMLValueLookup) {
+                    $ConfigItemFieldRawValue = $ConfigItemObject->XMLValueLookup(
+                        Item  => $Item,
+                        Value => $StringifiedXMLData->{$ConfigItemKey},
+                    );
+                }
+                else {
+                    $ConfigItemFieldRawValue = $StringifiedXMLData->{$ConfigItemKey};
+                }
+            }
+
+            # check multiple values
+            elsif (
+                IsHashRefWithData($StringifiedXMLData)
+                && $ConfigItemKey !~ m{\:\:\d+}gmx
+                )
+            {
+                my @ConfigItemKeys = grep { $_ =~ m{$ConfigItemKey} } sort keys %{$StringifiedXMLData};
+
+                for my $ConfigItemKey (@ConfigItemKeys) {
+                    if ($XMLValueLookup) {
+                        push @{$ConfigItemFieldRawValue}, $ConfigItemObject->XMLValueLookup(
+                            Item  => $Item,
+                            Value => $StringifiedXMLData->{$ConfigItemKey},
+                        );
+                    }
+                    else {
+                        push @{$ConfigItemFieldRawValue}, $StringifiedXMLData->{$ConfigItemKey};
+                    }
+                }
+            }
 
             if ( IsArrayRefWithData($ConfigItemFieldRawValue) ) {
-                CURRENTCONFIGITEMFIELDRAWVALUE:
-                for my $CurrentConfigItemFieldRawValue ( @{$ConfigItemFieldRawValue} ) {
-                    next CURRENTCONFIGITEMFIELDRAWVALUE if !IsHashRefWithData($CurrentConfigItemFieldRawValue);
-                    next CURRENTCONFIGITEMFIELDRAWVALUE if !exists $CurrentConfigItemFieldRawValue->{Content};
-
-                    push @ConfigItemFieldRawValues, $CurrentConfigItemFieldRawValue->{Content};
-                }
-            }
-            elsif ( IsHashRefWithData($ConfigItemFieldRawValue) ) {
-                if ( exists $ConfigItemFieldRawValue->{Content} ) {
-                    push @ConfigItemFieldRawValues, $ConfigItemFieldRawValue->{Content};
-                }
+                push @ConfigItemFieldRawValues, @{$ConfigItemFieldRawValue};
             }
             else {
                 push @ConfigItemFieldRawValues, $ConfigItemFieldRawValue;
@@ -429,7 +436,6 @@ sub _GetAdditionalDFStorageData {
 
         my $DynamicFieldValue;
         if (@ConfigItemFieldRawValues) {
-
             $DynamicFieldValue = $Self->_ConvertConfigItemFieldRawValuesToDynamicFieldValue(
                 DynamicFieldType         => $DynamicFieldConfig->{FieldType},
                 ConfigItemFieldRawValues => \@ConfigItemFieldRawValues,
@@ -440,6 +446,108 @@ sub _GetAdditionalDFStorageData {
     }
 
     return \%DynamicFieldValues;
+}
+
+=head2 _XMLData2StringifiedXMLData()
+
+Converts XML data structure used by Kernel::System::ZnunyHelper::_ITSMConfigItemVersionAdd
+to stringified XMLData 'CPU::1'. This function should be integrated into Znuny::ITSM.
+
+    my $StringifiedXMLData = $Znuny4OTRSDynamicFieldConfigItemObject->_XMLData2StringifiedXMLData(
+        Prefix  => $Prefix,
+        XMLData => {
+            'NIC' => [
+                {
+                    'Content'    => 'NicName1',
+                    'IPoverDHCP' => [
+                        {
+                            'Content' => 'Yes',
+                        }
+                    ],
+                    'IPAddress' => [
+                        {
+                            'Content' => '123',
+                        },
+                    ],
+                },
+                {
+                    'Content'   => 'NicName2',
+                    'IPoverDHCP' => [
+                        {
+                            'Content' => 'No',
+                        }
+                    ],
+                    'IPAddress' => [
+                        {
+                            'Content' => '456',
+                        }
+                    ],
+                }
+            ],
+        }
+    );
+
+Returns:
+
+    my $StringifiedXMLData = {
+        NIC::1                => 'NicName1',
+        NIC::1::IPAddress::1  => '123',
+        NIC::1::IPoverDHCP::1 => 'Yes',
+        NIC::2                => 'NicName2',
+        NIC::2::IPAddress::1  => '456',
+        NIC::2::IPoverDHCP::1 => 'No',
+    };
+
+=cut
+
+sub _XMLData2StringifiedXMLData {
+    my ( $Self, %Param ) = @_;
+
+    my $LogObject = $Kernel::OM->Get('Kernel::System::Log');
+
+    if ( !$Param{XMLData} ) {
+        $LogObject->Log(
+            Priority => 'error',
+            Message  => "Needed parameter 'XMLData'.",
+        );
+        return;
+    }
+
+    my %XMLData = %{ Storable::dclone( $Param{XMLData} ) };
+    my $Data;
+
+    ITEM:
+    for my $Item ( sort keys %XMLData ) {
+        next ITEM if !IsArrayRefWithData( $XMLData{$Item} );
+
+        my $CounterInsert = 1;
+        for my $SubItem ( @{ $XMLData{$Item} } ) {
+            my $Key = $Item . '::' . $CounterInsert;
+            if ( $Param{Prefix} ) {
+                $Key = $Param{Prefix} . '::' . $Key;
+            }
+
+            if ( $SubItem->{Content} ) {
+                $Data->{$Key} = $SubItem->{Content};
+                delete $SubItem->{Content};
+            }
+
+            my $SubXMLData = $Self->_XMLData2StringifiedXMLData(
+                XMLData => $SubItem,
+                Prefix  => $Key,
+            );
+
+            if ($SubXMLData) {
+                %{$Data} = (
+                    %{$Data},
+                    %{$SubXMLData},
+                );
+            }
+            $CounterInsert++;
+        }
+    }
+
+    return $Data;
 }
 
 =head2 _ConvertConfigItemFieldRawValuesToDynamicFieldValue()
