@@ -411,7 +411,7 @@ sub _GetAdditionalDFStorageData {
                 && $ConfigItemKey !~ m{\:\:\d+}gmx
                 )
             {
-                my @ConfigItemKeys = grep { $_ =~ m{$ConfigItemKey} } sort keys %{$StringifiedXMLData};
+                my @ConfigItemKeys = grep { $_ =~ m{^$ConfigItemKey} } sort keys %{$StringifiedXMLData};
 
                 for my $ConfigItemKey (@ConfigItemKeys) {
                     if ($XMLValueLookup) {
