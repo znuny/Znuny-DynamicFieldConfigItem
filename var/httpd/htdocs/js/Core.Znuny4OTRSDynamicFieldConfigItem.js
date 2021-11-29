@@ -63,7 +63,7 @@ Core.Znuny4OTRSDynamicFieldConfigItem = (function (TargetNS) {
                         FieldType = Core.Form.Znuny4OTRSInput.Type(FieldID),
                         DateTimeParts;
 
-                    if (FieldType == 'DynamicField_Date' || FieldType == 'DynamicField_DateTime') {
+                    if (Value && (FieldType == 'DynamicField_Date' || FieldType == 'DynamicField_DateTime')) {
                         DateTimeParts = Value.match(/^(\d{4})-(\d{2})-(\d{2})( (\d{2}):(\d{2}):(\d{2}))?$/);
                         if (DateTimeParts.length != 8) {
                             return;

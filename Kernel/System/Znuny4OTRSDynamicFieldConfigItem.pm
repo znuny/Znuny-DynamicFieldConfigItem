@@ -104,15 +104,13 @@ sub GetAdditionalDFStorageData {
     return if $DynamicFieldConfig->{ObjectType} ne 'Ticket';
 
     # Evaluate selected config item IDs.
-    return if !IsArrayRefWithData( $Param{SelectedConfigItemIDs} );
+    $Param{SelectedConfigItemIDs} //= [];
     my @SelectedConfigItemIDs =
         grep {
         defined $_
             && $_ =~ m{\A[1-9]\d*\z}
         }
         @{ $Param{SelectedConfigItemIDs} };
-
-    return if !@SelectedConfigItemIDs;
 
     # Evaluate additional dynamic field storage configs.
     my $AdditionalDFStorageConfigs = $DynamicFieldConfig->{Config}->{AdditionalDFStorage};
@@ -138,7 +136,9 @@ sub GetAdditionalDFStorageData {
         push @ConfigItemData, $ConfigItemData;
     }
 
-    return {} if !@ConfigItemData;
+    # Note: @ConfigItemData can be empty at this point.
+    # In this case, additional dynamic fields will be set empty.
+    # See issue #12: https://git.znuny.com/Znuny/Private/Znuny4OTRS-DynamicFieldConfigItem/-/issues/12
 
     my $AdditionalDFStorageData = $Self->_GetAdditionalDFStorageData(
         ConfigItemData             => \@ConfigItemData,
@@ -285,7 +285,7 @@ sub _GetConfigItemData {
     config item data.
 
     my $AdditionalDFStorageData = $Znuny4OTRSDynamicFieldConfigItemObject->_GetAdditionalDFStorageData(
-        ConfigItemData => [
+        ConfigItemData => [ # can be empty/undef, additional dynamic fields will be set empty in this case.
             {
                 # Data returned by _GetConfigItemData()
             },
@@ -317,7 +317,7 @@ sub _GetAdditionalDFStorageData {
     my $ConfigItemObject   = $Kernel::OM->Get('Kernel::System::ITSMConfigItem');
 
     NEEDED:
-    for my $Needed (qw(ConfigItemData AdditionalDFStorageConfigs)) {
+    for my $Needed (qw(AdditionalDFStorageConfigs)) {
         next NEEDED if defined $Param{$Needed};
 
         $LogObject->Log(
@@ -331,7 +331,6 @@ sub _GetAdditionalDFStorageData {
 
     ADDITIONALDFSTORAGECONFIG:
     for my $AdditionalDFStorageConfig ( @{ $Param{AdditionalDFStorageConfigs} } ) {
-
         my $DynamicFieldConfig = $DynamicFieldObject->DynamicFieldGet(
             Name => $AdditionalDFStorageConfig->{DynamicField},
         );
@@ -340,10 +339,12 @@ sub _GetAdditionalDFStorageData {
         # Only ticket dynamic fields are supported
         next ADDITIONALDFSTORAGECONFIG if $DynamicFieldConfig->{ObjectType} ne 'Ticket';
 
-        # Initialize every configured additional DF storage field with undef
+        # Initialize every configured additional DF storage field with empty string
         # so that fields which are empty in the selected config item(s) will be cleared
         # and no data will be left from previously selected config item(s).
-        $DynamicFieldValues{ $AdditionalDFStorageConfig->{DynamicField} } = undef;
+        # Also this is the default value for the dynamic field if it will be cleared
+        # because no config item is selected (anymore).
+        $DynamicFieldValues{ $AdditionalDFStorageConfig->{DynamicField} } = '';
 
         my @ConfigItemFieldRawValues;
 
@@ -583,12 +584,12 @@ sub _ConvertConfigItemFieldRawValuesToDynamicFieldValue {
         return;
     }
 
-    my $ConfigItemFieldRawValues = $Param{ConfigItemFieldRawValues};
+    my $ConfigItemFieldRawValues = $Param{ConfigItemFieldRawValues} // [];
     return if !IsArrayRefWithData($ConfigItemFieldRawValues);
 
     my $DynamicFieldType = $Param{DynamicFieldType};
 
-    # Leave arrays is for multiselect. Don't check possible values of dynamic field because frontend
+    # Leave arrays as they are for multiselect. Don't check possible values of dynamic field because frontend
     # could have changed them anyways.
     return $ConfigItemFieldRawValues if $DynamicFieldType eq 'Multiselect';
 
@@ -597,7 +598,9 @@ sub _ConvertConfigItemFieldRawValuesToDynamicFieldValue {
 
     # Concatenate for text(area).
     if ( $DynamicFieldType =~ m{\AText(Area)?\z} ) {
-        my $DynamicFieldValue = join ', ', @{$ConfigItemFieldRawValues};
+
+        # map call: Avoid warnings about undefined values in array.
+        my $DynamicFieldValue = join ', ', map { $_ // '' } @{$ConfigItemFieldRawValues};
         return $DynamicFieldValue;
     }
 
