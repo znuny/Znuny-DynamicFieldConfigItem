@@ -47,7 +47,7 @@ sub Run {
 
     $LayoutObject->AddJSOnDocumentCompleteIfNotExists(
         Key  => 'AdminDynamicFieldConfigItem',
-        Code => 'Core.Agent.Admin.Znuny4OTRSDynamicFieldConfigItem.Init();',
+        Code => 'Core.Agent.Admin.ZnunyDynamicFieldConfigItem.Init();',
     );
 
     if ( $Self->{Subaction} eq 'Add' ) {

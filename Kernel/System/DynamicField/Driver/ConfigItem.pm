@@ -78,7 +78,7 @@ sub EditFieldRender {
                 my $DynamicFieldName = $Param{DynamicFieldConfig}->{Name};
 
                 $LayoutObject->AddJSOnDocumentComplete(
-                    Code => "Core.Znuny4OTRSDynamicFieldConfigItem.InitAdditionalDFStorage('$DynamicFieldName');",
+                    Code => "Core.ZnunyDynamicFieldConfigItem.InitAdditionalDFStorage('$DynamicFieldName');",
                 );
             }
         }

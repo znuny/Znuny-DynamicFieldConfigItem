@@ -15,11 +15,11 @@ Core.Agent.Admin = Core.Agent.Admin || {};
 
 /**
  * @namespace
- * @exports TargetNS as Core.Agent.Admin.Znuny4OTRSDynamicFieldConfigItem
+ * @exports TargetNS as Core.Agent.Admin.ZnunyDynamicFieldConfigItem
  * @description
- *      This namespace contains the special functions for Znuny4OTRSDynamicFieldConfigItem.
+ *      This namespace contains the special functions for ZnunyDynamicFieldConfigItem.
  */
-Core.Agent.Admin.Znuny4OTRSDynamicFieldConfigItem = (function (TargetNS) {
+Core.Agent.Admin.ZnunyDynamicFieldConfigItem = (function (TargetNS) {
 
     TargetNS.Init = function () {
         InitLinkTypeSelection();
@@ -56,4 +56,4 @@ Core.Agent.Admin.Znuny4OTRSDynamicFieldConfigItem = (function (TargetNS) {
     }
 
     return TargetNS;
-}(Core.Agent.Admin.Znuny4OTRSDynamicFieldConfigItem || {}));
+}(Core.Agent.Admin.ZnunyDynamicFieldConfigItem || {}));

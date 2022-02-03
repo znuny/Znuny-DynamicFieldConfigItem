@@ -12,15 +12,15 @@ var Core = Core || {};
 
 /**
  * @namespace
- * @exports TargetNS as Core.Znuny4OTRSDynamicFieldConfigItem
+ * @exports TargetNS as Core.ZnunyDynamicFieldConfigItem
  * @description
- *      This namespace contains the special functions for Znuny4OTRSDynamicFieldConfigItem.
+ *      This namespace contains the special functions for ZnunyDynamicFieldConfigItem.
  */
-Core.Znuny4OTRSDynamicFieldConfigItem = (function (TargetNS) {
+Core.ZnunyDynamicFieldConfigItem = (function (TargetNS) {
 
     /**
      * @name InitAdditionalDFStorage
-     * @memberof Core.Znuny4OTRSDynamicFieldConfigItem.InitAdditionalDFStorage
+     * @memberof Core.ZnunyDynamicFieldConfigItem.InitAdditionalDFStorage
      * @function
      * @param {String} DynamicFieldName - Name of dynamic field which contains the config item selection.
      * @description
@@ -38,13 +38,13 @@ Core.Znuny4OTRSDynamicFieldConfigItem = (function (TargetNS) {
         var URL  = Core.Config.Get('Baselink'),
             SelectedConfigItemIDs,
             Data = {
-                Action:                 'Znuny4OTRSDynamicFieldConfigItemAJAX',
+                Action:                 'ZnunyDynamicFieldConfigItemAJAX',
                 Subaction:              'GetAdditionalDFStorageData',
                 SourceDynamicFieldName: SourceDynamicFieldName,
             };
 
         // Support single and multi select.
-        SelectedConfigItemIDs = Core.Form.Znuny4OTRSInput.Get('DynamicField_' + SourceDynamicFieldName);
+        SelectedConfigItemIDs = Znuny.Form.Input.Get('DynamicField_' + SourceDynamicFieldName);
         if (typeof(SelectedConfigItemIDs) === 'string') {
             SelectedConfigItemIDs = [SelectedConfigItemIDs];
         }
@@ -59,8 +59,8 @@ Core.Znuny4OTRSDynamicFieldConfigItem = (function (TargetNS) {
                 }
 
                 $.each(Response, function(DestinationDynamicFieldName, Value) {
-                    var FieldID   = Core.Form.Znuny4OTRSInput.FieldID('DynamicField_' + DestinationDynamicFieldName),
-                        FieldType = Core.Form.Znuny4OTRSInput.Type(FieldID),
+                    var FieldID   = Znuny.Form.Input.FieldID('DynamicField_' + DestinationDynamicFieldName),
+                        FieldType = Znuny.Form.Input.Type(FieldID),
                         DateTimeParts;
 
                     if (Value && (FieldType == 'DynamicField_Date' || FieldType == 'DynamicField_DateTime')) {
@@ -79,7 +79,7 @@ Core.Znuny4OTRSDynamicFieldConfigItem = (function (TargetNS) {
                         };
                     }
 
-                    Core.Form.Znuny4OTRSInput.Set(
+                    Znuny.Form.Input.Set(
                         'DynamicField_' + DestinationDynamicFieldName,
                         Value
                     );
@@ -89,4 +89,4 @@ Core.Znuny4OTRSDynamicFieldConfigItem = (function (TargetNS) {
     }
 
     return TargetNS;
-}(Core.Znuny4OTRSDynamicFieldConfigItem || {}));
+}(Core.ZnunyDynamicFieldConfigItem || {}));

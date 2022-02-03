@@ -6,7 +6,7 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package Kernel::System::Ticket::Event::Znuny4OTRSDynamicFieldConfigItemAdditionalDFStorage;
+package Kernel::System::Ticket::Event::ZnunyDynamicFieldConfigItemAdditionalDFStorage;
 
 use strict;
 use warnings;
@@ -16,7 +16,7 @@ use Kernel::System::VariableCheck qw(:all);
 our @ObjectDependencies = (
     'Kernel::System::DynamicField',
     'Kernel::System::Log',
-    'Kernel::System::Znuny4OTRSDynamicFieldConfigItem',
+    'Kernel::System::ZnunyDynamicFieldConfigItem',
 );
 
 sub new {
@@ -33,7 +33,7 @@ sub Run {
 
     my $LogObject                              = $Kernel::OM->Get('Kernel::System::Log');
     my $DynamicFieldObject                     = $Kernel::OM->Get('Kernel::System::DynamicField');
-    my $Znuny4OTRSDynamicFieldConfigItemObject = $Kernel::OM->Get('Kernel::System::Znuny4OTRSDynamicFieldConfigItem');
+    my $ZnunyDynamicFieldConfigItemObject = $Kernel::OM->Get('Kernel::System::ZnunyDynamicFieldConfigItem');
 
     NEEDED:
     for my $Needed (qw( Data Event Config UserID )) {
@@ -74,7 +74,7 @@ sub Run {
         $ConfigItemIDs = [ $ConfigItemIDs, ];
     }
 
-    my $AdditionalDFStorageData = $Znuny4OTRSDynamicFieldConfigItemObject->GetAdditionalDFStorageData(
+    my $AdditionalDFStorageData = $ZnunyDynamicFieldConfigItemObject->GetAdditionalDFStorageData(
         SourceDynamicFieldName => $Param{Data}->{FieldName},
         SelectedConfigItemIDs  => $ConfigItemIDs,
         StorageType            => 'Backend',
@@ -82,7 +82,7 @@ sub Run {
     );
     return 1 if !IsHashRefWithData($AdditionalDFStorageData);
 
-    my $AdditionalDynamicFieldValuesStored = $Znuny4OTRSDynamicFieldConfigItemObject->StoreDynamicFieldValues(
+    my $AdditionalDynamicFieldValuesStored = $ZnunyDynamicFieldConfigItemObject->StoreDynamicFieldValues(
         TicketID                => $Param{Data}->{TicketID},
         AdditionalDFStorageData => $AdditionalDFStorageData,
         UserID                  => $Param{UserID},

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <otrs_config version="2.0" init="Application">
-    <!-- nofilter(TidyAll::Plugin::Znuny4OTRS::Config::ACLKeysLevel3Actions) -->
+    <!-- nofilter(TidyAll::Plugin::Znuny::Config::ACLKeysLevel3Actions) -->
     <Setting Name="Frontend::Module###AdminDynamicFieldConfigItem" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
         <Navigation>Frontend::Admin::ModuleRegistration</Navigation>
@@ -23,7 +23,7 @@
             </Item>
         </Value>
     </Setting>
-    <Setting Name="Frontend::Module###Znuny4OTRSDynamicFieldConfigItemAJAX" Required="0" Valid="1">
+    <Setting Name="Frontend::Module###ZnunyDynamicFieldConfigItemAJAX" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
         <Navigation>Frontend::Agent::ModuleRegistration</Navigation>
         <Value>
@@ -44,7 +44,7 @@
             </Item>
         </Value>
     </Setting>
-    <Setting Name="CustomerFrontend::Module###Znuny4OTRSDynamicFieldConfigItemAJAX" Required="0" Valid="1">
+    <Setting Name="CustomerFrontend::Module###ZnunyDynamicFieldConfigItemAJAX" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration for the customer interface.</Description>
         <Navigation>Frontend::Customer::ModuleRegistration</Navigation>
         <Value>
@@ -95,48 +95,48 @@
             </Hash>
         </Value>
     </Setting>
-    <Setting Name="Ticket::EventModulePost###999-Znuny4OTRSDynamicFieldConfigItemTicketLink" Required="0" Valid="1">
+    <Setting Name="Ticket::EventModulePost###999-ZnunyDynamicFieldConfigItemTicketLink" Required="0" Valid="1">
         <Description Translatable="1">Ticket event module that creates and removes links between tickets and config items.</Description>
-        <Navigation>Core::Event::Znuny4OTRS::DynamicFieldConfigItem</Navigation>
+        <Navigation>Core::Event::Znuny::DynamicFieldConfigItem</Navigation>
         <Value>
             <Hash>
-                <Item Key="Module">Kernel::System::Ticket::Event::Znuny4OTRSDynamicFieldConfigItemTicketLink</Item>
+                <Item Key="Module">Kernel::System::Ticket::Event::ZnunyDynamicFieldConfigItemTicketLink</Item>
                 <Item Key="Transaction">0</Item>
                 <Item Key="Event">TicketDynamicFieldUpdate</Item>
             </Hash>
         </Value>
     </Setting>
-    <Setting Name="Ticket::EventModulePost###999-Znuny4OTRSDynamicFieldConfigItemAdditionalDFStorage" Required="0" Valid="1">
+    <Setting Name="Ticket::EventModulePost###999-ZnunyDynamicFieldConfigItemAdditionalDFStorage" Required="0" Valid="1">
         <Description Translatable="1">Ticket event module that creates and removes links between tickets and config items.</Description>
-        <Navigation>Core::Event::Znuny4OTRS::DynamicFieldConfigItem</Navigation>
+        <Navigation>Core::Event::Znuny::DynamicFieldConfigItem</Navigation>
         <Value>
             <Hash>
-                <Item Key="Module">Kernel::System::Ticket::Event::Znuny4OTRSDynamicFieldConfigItemAdditionalDFStorage</Item>
+                <Item Key="Module">Kernel::System::Ticket::Event::ZnunyDynamicFieldConfigItemAdditionalDFStorage</Item>
                 <Item Key="Transaction">0</Item>
                 <Item Key="Event">TicketDynamicFieldUpdate</Item>
             </Hash>
         </Value>
     </Setting>
     <!-- Loaders -->
-    <Setting Name="Loader::Agent::CommonJS###999-Znuny4OTRSDynamicFieldConfigItem" Required="0" Valid="1">
+    <Setting Name="Loader::Agent::CommonJS###999-ZnunyDynamicFieldConfigItem" Required="0" Valid="1">
         <Description Translatable="1">List of JS files to always be loaded for the agent interface.</Description>
         <Navigation>Frontend::Base::Loader</Navigation>
         <Value>
             <Array>
-                <Item>Core.Znuny4OTRSDynamicFieldConfigItem.js</Item>
+                <Item>Core.ZnunyDynamicFieldConfigItem.js</Item>
             </Array>
         </Value>
     </Setting>
-    <Setting Name="Loader::Customer::CommonJS###999-Znuny4OTRSDynamicFieldConfigItem" Required="0" Valid="1">
+    <Setting Name="Loader::Customer::CommonJS###999-ZnunyDynamicFieldConfigItem" Required="0" Valid="1">
         <Description Translatable="1">List of JS files to always be loaded for the customer interface.</Description>
         <Navigation>Frontend::Base::Loader</Navigation>
         <Value>
             <Array>
-                <Item>Core.Znuny4OTRSDynamicFieldConfigItem.js</Item>
+                <Item>Core.ZnunyDynamicFieldConfigItem.js</Item>
             </Array>
         </Value>
     </Setting>
-    <Setting Name="Loader::Module::AdminDynamicFieldConfigItem###003-Znuny4OTRSDynamicFieldConfigItem" Required="0" Valid="1">
+    <Setting Name="Loader::Module::AdminDynamicFieldConfigItem###003-ZnunyDynamicFieldConfigItem" Required="0" Valid="1">
         <Description Translatable="1">Loader module registration for the agent interface.</Description>
         <Navigation>Frontend::Admin::ModuleRegistration::Loader</Navigation>
         <Value>
@@ -147,16 +147,16 @@
                 </Item>
                 <Item Key="JavaScript">
                     <Array>
-                        <Item>Core.Agent.Admin.Znuny4OTRSDynamicFieldConfigItem.js</Item>
+                        <Item>Core.Agent.Admin.ZnunyDynamicFieldConfigItem.js</Item>
                     </Array>
                 </Item>
             </Hash>
         </Value>
     </Setting>
     <!-- These settings are only here for backwards compatibility -->
-    <Setting Name="Znuny4OTRSDynamicFieldConfigItem###TicketLink" Required="1" Valid="1" ReadOnly="1">
+    <Setting Name="ZnunyDynamicFieldConfigItem###TicketLink" Required="1" Valid="1" ReadOnly="1">
         <Description Translatable="1">No longer in use. Do not change. Required due to compatibility with previous package versions.</Description>
-        <Navigation>Core::Znuny4OTRS::DynamicFieldConfigItem</Navigation>
+        <Navigation>Core::Znuny::DynamicFieldConfigItem</Navigation>
         <Value>
             <Item ValueType="Select" SelectedID="1">
                 <Item ValueType="Option" Value="0" Translatable="1">No</Item>
@@ -164,9 +164,9 @@
             </Item>
         </Value>
     </Setting>
-    <Setting Name="Znuny4OTRSDynamicFieldConfigItem###LinkType" Required="1" Valid="1" ReadOnly="1">
+    <Setting Name="ZnunyDynamicFieldConfigItem###LinkType" Required="1" Valid="1" ReadOnly="1">
         <Description Translatable="1">No longer in use. Do not change. Required due to compatibility with previous package versions.</Description>
-        <Navigation>Core::Znuny4OTRS::DynamicFieldConfigItem</Navigation>
+        <Navigation>Core::Znuny::DynamicFieldConfigItem</Navigation>
         <Value>
             <Item ValueType="Select" SelectedID="RelevantTo">
                 <Item ValueType="Option" Value="AlternativeTo" Translatable="1">AlternativeTo</Item>

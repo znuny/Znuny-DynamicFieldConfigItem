@@ -6,7 +6,7 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package Kernel::System::Znuny4OTRSDynamicFieldConfigItem;
+package Kernel::System::ZnunyDynamicFieldConfigItem;
 
 use strict;
 use warnings;
@@ -23,11 +23,11 @@ use Kernel::System::VariableCheck qw(:all);
 
 =head1 NAME
 
-Kernel::System::Znuny4OTRSDynamicFieldConfigItem - Znuny4OTRSDynamicFieldConfigItem lib
+Kernel::System::ZnunyDynamicFieldConfigItem - ZnunyDynamicFieldConfigItem lib
 
 =head1 SYNOPSIS
 
-All Znuny4OTRSDynamicFieldConfigItem functions
+All ZnunyDynamicFieldConfigItem functions
 
 =head1 PUBLIC INTERFACE
 
@@ -35,7 +35,7 @@ All Znuny4OTRSDynamicFieldConfigItem functions
 
     Don't use the constructor directly, use the ObjectManager instead:
 
-    my $Znuny4OTRSDynamicFieldConfigItemObject = $Kernel::OM->Get('Kernel::System::Znuny4OTRSDynamicFieldConfigItem');
+    my $ZnunyDynamicFieldConfigItemObject = $Kernel::OM->Get('Kernel::System::ZnunyDynamicFieldConfigItem');
 
 =cut
 
@@ -60,7 +60,7 @@ sub new {
     Returns data for dynamic fields that should be filled based on the source dynamic field
     configuration and the selected config items.
 
-    my $AdditionalDFStorageData = $Znuny4OTRSDynamicFieldConfigItemObject->GetAdditionalDFStorageData(
+    my $AdditionalDFStorageData = $ZnunyDynamicFieldConfigItemObject->GetAdditionalDFStorageData(
         SourceDynamicFieldName => 'MyConfigItem',
         SelectedConfigItemIDs  => [ 45, 13, ],
         StorageType            => 'Frontend', # or 'Backend'
@@ -138,7 +138,7 @@ sub GetAdditionalDFStorageData {
 
     # Note: @ConfigItemData can be empty at this point.
     # In this case, additional dynamic fields will be set empty.
-    # See issue #12: https://git.znuny.com/Znuny/Private/Znuny4OTRS-DynamicFieldConfigItem/-/issues/12
+    # See issue #12: https://git.znuny.com/Znuny/Private/Znuny-DynamicFieldConfigItem/-/issues/12
 
     my $AdditionalDFStorageData = $Self->_GetAdditionalDFStorageData(
         ConfigItemData             => \@ConfigItemData,
@@ -152,7 +152,7 @@ sub GetAdditionalDFStorageData {
 
     Stores dynamic field values with given additional dynamic field storage data.
 
-    my $StoredDynamicFields = $Znuny4OTRSDynamicFieldConfigItemObject->StoreDynamicFieldValues(
+    my $StoredDynamicFields = $ZnunyDynamicFieldConfigItemObject->StoreDynamicFieldValues(
         TicketID                => 56,
         AdditionalDFStorageData => {
             # hash returned by GetAdditionalDFStorageData()
@@ -228,7 +228,7 @@ sub StoreDynamicFieldValues {
 
     Returns data of the last version in a sane form for the given config item ID.
 
-    my $ConfigItemData = $Znuny4OTRSDynamicFieldConfigItemObject->_GetConfigItemData(
+    my $ConfigItemData = $ZnunyDynamicFieldConfigItemObject->_GetConfigItemData(
         ConfigItemID => 52,
         UserID       => 54,
     );
@@ -284,7 +284,7 @@ sub _GetConfigItemData {
     Returns data which should be stored in additional dynamic fields for the given
     config item data.
 
-    my $AdditionalDFStorageData = $Znuny4OTRSDynamicFieldConfigItemObject->_GetAdditionalDFStorageData(
+    my $AdditionalDFStorageData = $ZnunyDynamicFieldConfigItemObject->_GetAdditionalDFStorageData(
         ConfigItemData => [ # can be empty/undef, additional dynamic fields will be set empty in this case.
             {
                 # Data returned by _GetConfigItemData()
@@ -454,7 +454,7 @@ sub _GetAdditionalDFStorageData {
 Converts XML data structure used by Kernel::System::ZnunyHelper::_ITSMConfigItemVersionAdd
 to stringified XMLData 'CPU::1'. This function should be integrated into Znuny::ITSM.
 
-    my $StringifiedXMLData = $Znuny4OTRSDynamicFieldConfigItemObject->_XMLData2StringifiedXMLData(
+    my $StringifiedXMLData = $ZnunyDynamicFieldConfigItemObject->_XMLData2StringifiedXMLData(
         Prefix  => $Prefix,
         XMLData => {
             'NIC' => [
@@ -556,7 +556,7 @@ sub _XMLData2StringifiedXMLData {
     Converts given raw values (which is always an array) to a value that can be given
     to the dynamic field method ValueSet.
 
-    my $DynamicFieldValue = $Znuny4OTRSDynamicFieldConfigItemObject->_ConvertConfigItemFieldRawValuesToDynamicFieldValue(
+    my $DynamicFieldValue = $ZnunyDynamicFieldConfigItemObject->_ConvertConfigItemFieldRawValuesToDynamicFieldValue(
         DynamicFieldType         => 'Multiselect',
         ConfigItemFieldRawValues => [
             # ...
@@ -625,7 +625,7 @@ sub _ConvertConfigItemFieldRawValuesToDynamicFieldValue {
 }
 
 #
-# Taken from Znuny4OTRS-Repo: Kernel::System::ZnunyHelper (8e336b82cc4e030fe48778e04c011c12e052397f)
+# Taken from Znuny-Repo: Kernel::System::ZnunyHelper (8e336b82cc4e030fe48778e04c011c12e052397f)
 #
 
 =head2 _ParseXML2Data()

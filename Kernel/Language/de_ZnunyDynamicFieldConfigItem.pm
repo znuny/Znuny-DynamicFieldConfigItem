@@ -6,7 +6,7 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package Kernel::Language::de_Znuny4OTRSDynamicFieldConfigItem;
+package Kernel::Language::de_ZnunyDynamicFieldConfigItem;
 
 use strict;
 use warnings;

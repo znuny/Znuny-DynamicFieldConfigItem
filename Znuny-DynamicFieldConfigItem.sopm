@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <otrs_package version="1.0">
-    <Name>Znuny4OTRS-DynamicFieldConfigItem</Name>
+    <Name>Znuny-DynamicFieldConfigItem</Name>
     <Version>6.0.10</Version>
     <ChangeLog Version="6.0.10" Date="2022-01-04 08:48:09 +0100">Fixed issue #12 Additional dynamic fields now will be cleared if the selected.</ChangeLog>
     <ChangeLog Version="6.0.9" Date="2021-09-24 15:01:07 +0200">Use name instead of ID for the GeneralCatalog types.</ChangeLog>
@@ -15,52 +15,52 @@ Deployment states of dynamic field config are now being stored as names instead 
     <ChangeLog Version="6.0.3" Date="2019-09-24 17:53:45 +0200">Improved code comment about empty dynamic field value.</ChangeLog>
     <ChangeLog Version="6.0.2" Date="2019-06-24 14:08:14 +0200">Dynamic fields of type 'config item' now can be configured to only show config items in certain deployment states. Added config item link type and direction to dynamic field config.</ChangeLog>
     <ChangeLog Version="6.0.1" Date="2019-03-05 16:34:20 +0100">Ported to OTRS6</ChangeLog>
-    <Framework>6.0.x</Framework>
-    <PackageRequired Version="6.0.76">Znuny4OTRS-Repo</PackageRequired>
-    <PackageRequired Version="6.0.11">GeneralCatalog</PackageRequired>
-    <PackageRequired Version="6.0.11">ITSMCore</PackageRequired>
-    <PackageRequired Version="6.0.11">ITSMConfigurationManagement</PackageRequired>
+    <Framework>6.2.x</Framework>
+    <PackageRequired Version="6.2.1">GeneralCatalog</PackageRequired>
+    <PackageRequired Version="6.2.1">ITSMCore</PackageRequired>
+    <PackageRequired Version="6.2.1">ITSMConfigurationManagement</PackageRequired>
     <Vendor>Znuny GmbH</Vendor>
     <URL>http://znuny.com/</URL>
     <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
     <Description Lang="en">Adds dynamic field types for config items.</Description>
     <Description Lang="de">Ergänzt dynamische Feldtypen für Config-Items.</Description>
     <Filelist>
-        <File Permission="660" Location="Kernel/Config/Files/XML/Znuny4OTRSDynamicFieldConfigItem.xml"/>
-        <File Permission="660" Location="Kernel/Language/de_Znuny4OTRSDynamicFieldConfigItem.pm"/>
+        <File Permission="660" Location="Kernel/Config/Files/XML/ZnunyDynamicFieldConfigItem.xml"/>
+        <File Permission="660" Location="Kernel/Language/de_ZnunyDynamicFieldConfigItem.pm"/>
         <File Permission="660" Location="Kernel/Modules/AdminDynamicFieldConfigItem.pm"/>
-        <File Permission="660" Location="Kernel/Modules/Znuny4OTRSDynamicFieldConfigItemAJAX.pm"/>
+        <File Permission="660" Location="Kernel/Modules/ZnunyDynamicFieldConfigItemAJAX.pm"/>
         <File Permission="660" Location="Kernel/Output/HTML/Templates/Standard/AdminDynamicFieldConfigItem.tt"/>
         <File Permission="660" Location="Kernel/Output/HTML/Templates/Standard/AdminDynamicFieldConfigItem/Config.tt"/>
         <File Permission="660" Location="Kernel/System/DynamicField/Driver/ConfigItem.pm"/>
         <File Permission="660" Location="Kernel/System/DynamicField/Driver/ConfigItemDropdown.pm"/>
         <File Permission="660" Location="Kernel/System/DynamicField/Driver/ConfigItemMultiselect.pm"/>
-        <File Permission="660" Location="Kernel/System/Ticket/Event/Znuny4OTRSDynamicFieldConfigItemAdditionalDFStorage.pm"/>
-        <File Permission="660" Location="Kernel/System/Ticket/Event/Znuny4OTRSDynamicFieldConfigItemTicketLink.pm"/>
-        <File Permission="660" Location="Kernel/System/Znuny4OTRSDynamicFieldConfigItem.pm"/>
-        <File Permission="660" Location="scripts/test/Znuny4OTRSDynamicFieldConfigItem/System/Ticket/Event/Znuny4OTRSDynamicFieldConfigItemAdditionalDFStorage.t"/>
-        <File Permission="660" Location="scripts/test/Znuny4OTRSDynamicFieldConfigItem/System/Ticket/Event/Znuny4OTRSDynamicFieldConfigItemTicketLink.t"/>
-        <File Permission="660" Location="scripts/test/Znuny4OTRSDynamicFieldConfigItem/System/Znuny4OTRSDynamicFieldConfigItem.t"/>
-        <File Permission="660" Location="var/httpd/htdocs/js/Core.Agent.Admin.Znuny4OTRSDynamicFieldConfigItem.js"/>
-        <File Permission="660" Location="var/httpd/htdocs/js/Core.Znuny4OTRSDynamicFieldConfigItem.js"/>
-        <File Permission="660" Location="var/packagesetup/Znuny4OTRSDynamicFieldConfigItem.pm"/>
+        <File Permission="660" Location="Kernel/System/Ticket/Event/ZnunyDynamicFieldConfigItemAdditionalDFStorage.pm"/>
+        <File Permission="660" Location="Kernel/System/Ticket/Event/ZnunyDynamicFieldConfigItemTicketLink.pm"/>
+        <File Permission="660" Location="Kernel/System/ZnunyDynamicFieldConfigItem.pm"/>
+        <File Permission="660" Location="scripts/test/ZnunyDynamicFieldConfigItem/System/Ticket/Event/ZnunyDynamicFieldConfigItemAdditionalDFStorage.t"/>
+        <File Permission="660" Location="scripts/test/ZnunyDynamicFieldConfigItem/System/Ticket/Event/ZnunyDynamicFieldConfigItemTicketLink.t"/>
+        <File Permission="660" Location="scripts/test/ZnunyDynamicFieldConfigItem/System/ZnunyDynamicFieldConfigItem.t"/>
+        <File Permission="660" Location="var/httpd/htdocs/js/Core.Agent.Admin.ZnunyDynamicFieldConfigItem.js"/>
+        <File Permission="660" Location="var/httpd/htdocs/js/Core.ZnunyDynamicFieldConfigItem.js"/>
+        <File Permission="660" Location="var/packagesetup/ZnunyDynamicFieldConfigItem.pm"/>
     </Filelist>
     <CodeUninstall Type="pre"><![CDATA[
-        $Kernel::OM->Get('var::packagesetup::Znuny4OTRSDynamicFieldConfigItem')->CodeUninstall();
+        $Kernel::OM->Get('var::packagesetup::ZnunyDynamicFieldConfigItem')->CodeUninstall();
     ]]></CodeUninstall>
     <CodeInstall Type="post"><![CDATA[
-        $Kernel::OM->Get('var::packagesetup::Znuny4OTRSDynamicFieldConfigItem')->CodeInstall();
+        $Kernel::OM->Get('var::packagesetup::ZnunyDynamicFieldConfigItem')->CodeInstall();
     ]]></CodeInstall>
     <CodeUpgrade Type="post"><![CDATA[
-        $Kernel::OM->Get('var::packagesetup::Znuny4OTRSDynamicFieldConfigItem')->CodeUpgrade();
+        $Kernel::OM->Get('var::packagesetup::ZnunyDynamicFieldConfigItem')->CodeUpgrade();
     ]]></CodeUpgrade>
     <CodeUpgrade Type="post" Version="6.0.2"><![CDATA[
-        $Kernel::OM->Get('var::packagesetup::Znuny4OTRSDynamicFieldConfigItem')->CodeUpgradeFromLowerThan602();
+        $Kernel::OM->Get('var::packagesetup::ZnunyDynamicFieldConfigItem')->CodeUpgradeFromLowerThan602();
     ]]></CodeUpgrade>
     <CodeUpgrade Type="post" Version="6.0.8"><![CDATA[
-        $Kernel::OM->Get('var::packagesetup::Znuny4OTRSDynamicFieldConfigItem')->CodeUpgradeFromLowerThan608();
+        $Kernel::OM->Get('var::packagesetup::ZnunyDynamicFieldConfigItem')->CodeUpgradeFromLowerThan608();
     ]]></CodeUpgrade>
     <CodeReinstall Type="post"><![CDATA[
-        $Kernel::OM->Get('var::packagesetup::Znuny4OTRSDynamicFieldConfigItem')->CodeReinstall();
+        $Kernel::OM->Get('var::packagesetup::ZnunyDynamicFieldConfigItem')->CodeReinstall();
     ]]></CodeReinstall>
+    <PackageMerge Name="Znuny4OTRS-DynamicFieldConfigItem" TargetVersion="6.0.10"></PackageMerge>
 </otrs_package>

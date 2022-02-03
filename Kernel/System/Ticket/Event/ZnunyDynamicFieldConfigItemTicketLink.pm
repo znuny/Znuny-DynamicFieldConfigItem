@@ -6,7 +6,7 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package Kernel::System::Ticket::Event::Znuny4OTRSDynamicFieldConfigItemTicketLink;
+package Kernel::System::Ticket::Event::ZnunyDynamicFieldConfigItemTicketLink;
 
 use strict;
 use warnings;

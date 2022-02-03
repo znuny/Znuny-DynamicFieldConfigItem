@@ -6,7 +6,7 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package Kernel::Modules::Znuny4OTRSDynamicFieldConfigItemAJAX;
+package Kernel::Modules::ZnunyDynamicFieldConfigItemAJAX;
 
 use strict;
 use warnings;
@@ -17,7 +17,7 @@ our @ObjectDependencies = (
     'Kernel::Output::HTML::Layout',
     'Kernel::System::Log',
     'Kernel::System::Web::Request',
-    'Kernel::System::Znuny4OTRSDynamicFieldConfigItem',
+    'Kernel::System::ZnunyDynamicFieldConfigItem',
 );
 
 sub new {
@@ -35,7 +35,7 @@ sub Run {
     my $LogObject                              = $Kernel::OM->Get('Kernel::System::Log');
     my $LayoutObject                           = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $ParamObject                            = $Kernel::OM->Get('Kernel::System::Web::Request');
-    my $Znuny4OTRSDynamicFieldConfigItemObject = $Kernel::OM->Get('Kernel::System::Znuny4OTRSDynamicFieldConfigItem');
+    my $ZnunyDynamicFieldConfigItemObject = $Kernel::OM->Get('Kernel::System::ZnunyDynamicFieldConfigItem');
 
     if ( !$Self->{Subaction} ) {
         $LogObject->Log(
@@ -69,7 +69,7 @@ sub Run {
         # Remove it.
         @SelectedConfigItemIDs = grep { defined $_ && length $_ } @SelectedConfigItemIDs;
 
-        $Data = $Znuny4OTRSDynamicFieldConfigItemObject->GetAdditionalDFStorageData(
+        $Data = $ZnunyDynamicFieldConfigItemObject->GetAdditionalDFStorageData(
             SourceDynamicFieldName => $SourceDynamicFieldName,
             SelectedConfigItemIDs  => \@SelectedConfigItemIDs,
             StorageType            => 'Frontend',

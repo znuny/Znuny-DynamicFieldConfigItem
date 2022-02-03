@@ -6,7 +6,7 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package var::packagesetup::Znuny4OTRSDynamicFieldConfigItem;    ## no critic
+package var::packagesetup::ZnunyDynamicFieldConfigItem;    ## no critic
 
 use strict;
 use warnings;
@@ -25,7 +25,7 @@ use Kernel::System::VariableCheck qw(:all);
 
 =head1 NAME
 
-var::packagesetup::Znuny4OTRSDynamicFieldConfigItem - code to execute during package installation
+var::packagesetup::ZnunyDynamicFieldConfigItem - code to execute during package installation
 
 =head1 SYNOPSIS
 
@@ -37,7 +37,7 @@ All code to execute during package installation
 
 create an object
 
-    my $CodeObject    = $Kernel::OM->Get('var::packagesetup::Znuny4OTRSDynamicFieldConfigItem');
+    my $CodeObject    = $Kernel::OM->Get('var::packagesetup::ZnunyDynamicFieldConfigItem');
 
 =cut
 
@@ -113,7 +113,7 @@ sub CodeUpgradeFromLowerThan602 {
 
     my $UserID = 1;
 
-    my $DeprecatedConfig = $ConfigObject->Get('Znuny4OTRSDynamicFieldConfigItem') // {};
+    my $DeprecatedConfig = $ConfigObject->Get('ZnunyDynamicFieldConfigItem') // {};
     return 1 if !IsHashRefWithData($DeprecatedConfig);
 
     # Don't migrate deprecated SysConfig settings to dynamic field config
