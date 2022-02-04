@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2012-2021 Znuny GmbH, http://znuny.com/
+# Copyright (C) 2012-2022 Znuny GmbH, http://znuny.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -22,14 +22,14 @@ $Kernel::OM->ObjectParamAdd(
     },
 );
 
-my $HelperObject                           = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
-my $ConfigItemObject                       = $Kernel::OM->Get('Kernel::System::ITSMConfigItem');
-my $GeneralCatalogObject                   = $Kernel::OM->Get('Kernel::System::GeneralCatalog');
-my $DynamicFieldObject                     = $Kernel::OM->Get('Kernel::System::DynamicField');
-my $DynamicFieldBackendObject              = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
-my $ValidObject                            = $Kernel::OM->Get('Kernel::System::Valid');
-my $TicketObject                           = $Kernel::OM->Get('Kernel::System::Ticket');
-my $ZnunyHelperObject                      = $Kernel::OM->Get('Kernel::System::ZnunyHelper');
+my $HelperObject                      = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+my $ConfigItemObject                  = $Kernel::OM->Get('Kernel::System::ITSMConfigItem');
+my $GeneralCatalogObject              = $Kernel::OM->Get('Kernel::System::GeneralCatalog');
+my $DynamicFieldObject                = $Kernel::OM->Get('Kernel::System::DynamicField');
+my $DynamicFieldBackendObject         = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
+my $ValidObject                       = $Kernel::OM->Get('Kernel::System::Valid');
+my $TicketObject                      = $Kernel::OM->Get('Kernel::System::Ticket');
+my $ZnunyHelperObject                 = $Kernel::OM->Get('Kernel::System::ZnunyHelper');
 my $ZnunyDynamicFieldConfigItemObject = $Kernel::OM->Get('Kernel::System::ZnunyDynamicFieldConfigItem');
 
 my $ValidID = $ValidObject->ValidLookup(
@@ -364,7 +364,7 @@ my @DynamicFields = (
                 {
                     DynamicField  => 'ZnunyDynamicFieldConfigItemUnitTestText5',
                     ConfigItemKey => 'ClassID',
-                    Type => 'Backend',    # Notice that this one is backend only
+                    Type          => 'Backend',                                   # Notice that this one is backend only
                 },
                 {
                     DynamicField  => 'ZnunyDynamicFieldConfigItemUnitTestDate',
@@ -436,7 +436,7 @@ my @DynamicFields = (
                 {
                     DynamicField  => 'ZnunyDynamicFieldConfigItemUnitTestText5',
                     ConfigItemKey => 'ClassID',
-                    Type => 'Frontend',    # Notice that this one is frontend only
+                    Type          => 'Frontend',                                 # Notice that this one is frontend only
                 },
                 {
                     DynamicField  => 'ZnunyDynamicFieldConfigItemUnitTestDate',
@@ -500,15 +500,15 @@ $DynamicFieldBackendObject->ValueSet(
 
 # Only additional dynamic fields set to type "backend" are expected to be set by the event.
 my %ExpectedDynamicFieldData = (
-    ZnunyDynamicFieldConfigItemUnitTestText1     => undef,                   # configured for frontend, not backend
-    ZnunyDynamicFieldConfigItemUnitTestText2     => 'CPU 2',
-    ZnunyDynamicFieldConfigItemUnitTestText3     => 'Unit test computer 1',
-    ZnunyDynamicFieldConfigItemUnitTestText4     => '127.0.0.1',
-    ZnunyDynamicFieldConfigItemUnitTestText5     => $ClassList{Computer},
-    ZnunyDynamicFieldConfigItemUnitTestDate      => '2040-01-01',
-    ZnunyDynamicFieldConfigItemUnitTestDateTime  => '2040-01-01 00:00:00',
-    ZnunyDynamicFieldConfigItemUnitTestDropdown1 => undef,                   # configured for frontend, not backend
-    ZnunyDynamicFieldConfigItemUnitTestDropdown2 => 'CPU 1',
+    ZnunyDynamicFieldConfigItemUnitTestText1        => undef,                    # configured for frontend, not backend
+    ZnunyDynamicFieldConfigItemUnitTestText2        => 'CPU 2',
+    ZnunyDynamicFieldConfigItemUnitTestText3        => 'Unit test computer 1',
+    ZnunyDynamicFieldConfigItemUnitTestText4        => '127.0.0.1',
+    ZnunyDynamicFieldConfigItemUnitTestText5        => $ClassList{Computer},
+    ZnunyDynamicFieldConfigItemUnitTestDate         => '2040-01-01',
+    ZnunyDynamicFieldConfigItemUnitTestDateTime     => '2040-01-01 00:00:00',
+    ZnunyDynamicFieldConfigItemUnitTestDropdown1    => undef,                    # configured for frontend, not backend
+    ZnunyDynamicFieldConfigItemUnitTestDropdown2    => 'CPU 1',
     ZnunyDynamicFieldConfigItemUnitTestMultiselect1 => [
         'CPU 2',
     ],
@@ -562,7 +562,7 @@ $DynamicFieldBackendObject->ValueSet(
     ZnunyDynamicFieldConfigItemUnitTestText2 => 'CPU 2, CPU 4',
     ZnunyDynamicFieldConfigItemUnitTestText3 => 'Unit test computer 1, Unit test computer 2',
     ZnunyDynamicFieldConfigItemUnitTestText4 => '127.0.0.1, 127.0.0.2',
-    ZnunyDynamicFieldConfigItemUnitTestText5        => undef,                # configured for frontend, not backend
+    ZnunyDynamicFieldConfigItemUnitTestText5        => undef,                   # configured for frontend, not backend
     ZnunyDynamicFieldConfigItemUnitTestDate         => '2040-01-01',
     ZnunyDynamicFieldConfigItemUnitTestDateTime     => '2040-01-01 00:00:00',
     ZnunyDynamicFieldConfigItemUnitTestDropdown1    => 'CPU 1',

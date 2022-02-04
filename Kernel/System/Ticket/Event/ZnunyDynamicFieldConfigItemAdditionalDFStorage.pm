@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2012-2021 Znuny GmbH, http://znuny.com/
+# Copyright (C) 2012-2022 Znuny GmbH, http://znuny.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -31,8 +31,8 @@ sub new {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    my $LogObject                              = $Kernel::OM->Get('Kernel::System::Log');
-    my $DynamicFieldObject                     = $Kernel::OM->Get('Kernel::System::DynamicField');
+    my $LogObject                         = $Kernel::OM->Get('Kernel::System::Log');
+    my $DynamicFieldObject                = $Kernel::OM->Get('Kernel::System::DynamicField');
     my $ZnunyDynamicFieldConfigItemObject = $Kernel::OM->Get('Kernel::System::ZnunyDynamicFieldConfigItem');
 
     NEEDED:

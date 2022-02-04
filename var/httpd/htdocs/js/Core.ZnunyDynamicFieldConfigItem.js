@@ -8,8 +8,8 @@
 
 "use strict";
 
+var Znuny = Znuny || {};
 var Core = Core || {};
-
 /**
  * @namespace
  * @exports TargetNS as Core.ZnunyDynamicFieldConfigItem

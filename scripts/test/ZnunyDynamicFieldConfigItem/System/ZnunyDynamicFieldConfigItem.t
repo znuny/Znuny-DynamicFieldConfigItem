@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2012-2021 Znuny GmbH, http://znuny.com/
+# Copyright (C) 2012-2022 Znuny GmbH, http://znuny.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -22,13 +22,13 @@ $Kernel::OM->ObjectParamAdd(
     },
 );
 
-my $HelperObject                           = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
-my $ConfigItemObject                       = $Kernel::OM->Get('Kernel::System::ITSMConfigItem');
-my $GeneralCatalogObject                   = $Kernel::OM->Get('Kernel::System::GeneralCatalog');
-my $DynamicFieldObject                     = $Kernel::OM->Get('Kernel::System::DynamicField');
-my $ValidObject                            = $Kernel::OM->Get('Kernel::System::Valid');
-my $TicketObject                           = $Kernel::OM->Get('Kernel::System::Ticket');
-my $ZnunyHelperObject                      = $Kernel::OM->Get('Kernel::System::ZnunyHelper');
+my $HelperObject                      = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+my $ConfigItemObject                  = $Kernel::OM->Get('Kernel::System::ITSMConfigItem');
+my $GeneralCatalogObject              = $Kernel::OM->Get('Kernel::System::GeneralCatalog');
+my $DynamicFieldObject                = $Kernel::OM->Get('Kernel::System::DynamicField');
+my $ValidObject                       = $Kernel::OM->Get('Kernel::System::Valid');
+my $TicketObject                      = $Kernel::OM->Get('Kernel::System::Ticket');
+my $ZnunyHelperObject                 = $Kernel::OM->Get('Kernel::System::ZnunyHelper');
 my $ZnunyDynamicFieldConfigItemObject = $Kernel::OM->Get('Kernel::System::ZnunyDynamicFieldConfigItem');
 
 my $ValidID = $ValidObject->ValidLookup(
@@ -373,7 +373,7 @@ my @DynamicFields = (
                 {
                     DynamicField  => 'ZnunyDynamicFieldConfigItemUnitTestText5',
                     ConfigItemKey => 'ClassID',
-                    Type => 'Backend',    # Notice that this one is backend only
+                    Type          => 'Backend',                                   # Notice that this one is backend only
                 },
                 {
                     DynamicField  => 'ZnunyDynamicFieldConfigItemUnitTestText6',
@@ -450,7 +450,7 @@ my @DynamicFields = (
                 {
                     DynamicField  => 'ZnunyDynamicFieldConfigItemUnitTestText5',
                     ConfigItemKey => 'ClassID',
-                    Type => 'Frontend',    # Notice that this one is frontend only
+                    Type          => 'Frontend',                                 # Notice that this one is frontend only
                 },
                 {
                     DynamicField  => 'ZnunyDynamicFieldConfigItemUnitTestText6',
