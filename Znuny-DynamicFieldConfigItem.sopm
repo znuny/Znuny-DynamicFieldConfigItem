@@ -17,10 +17,10 @@ Deployment states of dynamic field config are now being stored as names instead 
     <ChangeLog Version="6.0.3" Date="2019-09-24 17:53:45 +0200">Improved code comment about empty dynamic field value.</ChangeLog>
     <ChangeLog Version="6.0.2" Date="2019-06-24 14:08:14 +0200">Dynamic fields of type 'config item' now can be configured to only show config items in certain deployment states. Added config item link type and direction to dynamic field config.</ChangeLog>
     <ChangeLog Version="6.0.1" Date="2019-03-05 16:34:20 +0100">Ported to OTRS6</ChangeLog>
-    <Framework>6.3.x</Framework>
-    <PackageRequired Version="6.3.1">GeneralCatalog</PackageRequired>
-    <PackageRequired Version="6.3.1">ITSMCore</PackageRequired>
-    <PackageRequired Version="6.3.1">ITSMConfigurationManagement</PackageRequired>
+    <Framework>6.4.x</Framework>
+    <PackageRequired Version="6.4.2">GeneralCatalog</PackageRequired>
+    <PackageRequired Version="6.4.2">ITSMCore</PackageRequired>
+    <PackageRequired Version="6.4.2">ITSMConfigurationManagement</PackageRequired>
     <Vendor>Znuny GmbH</Vendor>
     <URL>http://znuny.com/</URL>
     <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
