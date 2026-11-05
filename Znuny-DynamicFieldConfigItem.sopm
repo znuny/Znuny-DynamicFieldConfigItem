@@ -11,6 +11,7 @@
     <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
     <Description Lang="en">Adds dynamic field types for config items.</Description>
     <Description Lang="de">Ergänzt dynamische Feldtypen für Config-Items.</Description>
+    <Description Lang="hu">Dinamikus mező típusokat ad a konfigurációelemekhez.</Description>
     <ChangeLog Version="6.4.1" Date="2022-08-01 15:05:38 +0200">Initial release for Znuny 6.4.</ChangeLog>
     <ChangeLog Version="6.3.1" Date="2022-05-19 15:59:07 +0200">Init</ChangeLog>
     <ChangeLog Version="6.2.1" Date="2022-02-05 15:09:55 +0100">Updated for Version 6.x</ChangeLog>
